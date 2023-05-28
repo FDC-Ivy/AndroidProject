@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Androidss Project</string>
+    <!--    <string name="hyperlink">Learn more about Android app development at\n<a href="https://learntodroid.com">LearnToDroid.com</a></string>-->
+
+    <string name="firstname">First Name</string>
+    <string name="lastname">Last Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <!--Customer Details Strings-->
+    <string name="login_name">Sign in</string>
+    <string name="register_name">Sign up here</string>
+    <string name="wlc_sign_in">Welcome back, sign in</string>
+    <string name="already_member">Already have an account, Sign in</string>
+    <string name="dont_have">Don\'t have an account, Sign up</string>
+
+    <!--Sellers Details Strings-->
+    <string name="s_login_name">Sign in</string>
+    <string name="s_register_name">Seller: Sign up here</string>
+    <string name="s_wlc_sign_in">Welcome back, sign in</string>
+
+    <!--Buttons-->
+    <string name="button_signup">Register</string>
+    <string name="button_signin">Login</string>
+    <string name="title_activity_customer_home">CustomerHome</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="title_activity_seller_home">SellerHome</string>
+    <string name="title_activity_customer_home2">CustomerHome2</string>
+
+    <!--Customer Home-->
+    <string name="tab_home">Home</string>
+    <string name="tab_cart">My Cart</string>
+    <string name="tab_user">User</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

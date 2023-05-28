@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusable="true"
+    android:id="@+id/branch_button"
+    android:padding="16dp">
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/branch_image"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/branch_name"
+        android:layout_toEndOf="@id/branch_image"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        tools:text="Name"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/branch_address"
+        android:layout_toEndOf="@id/branch_image"
+        android:layout_below="@id/branch_name"
+        android:textColor="@color/black"
+        tools:text="emial@email.com"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/branch_image"
+        android:layout_marginTop="10dp"
+        android:background="#DAD8D8"/>
+
+</RelativeLayout>
