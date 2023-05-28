@@ -6,15 +6,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.androidproject.Activity.CustomerHome;
-import com.example.androidproject.Activity.Products;
+import com.example.androidproject.Activity.ProductActivity;
 import com.example.androidproject.Model.Branches;
 import com.example.androidproject.R;
 import com.example.androidproject.ViewHolder.MyViewHolder;
@@ -49,15 +47,12 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<MyViewHolder> {
             public void onClick(View view) {
                 // Handle item click event
                 //Toast.makeText(view.getContext(), "Clicked: " + data, Toast.LENGTH_SHORT).show();
-                /*Bundle bundle = new Bundle();
+                Bundle bundle = new Bundle();
                 bundle.putString("key_branch_id", items.get(position).getmBranchID());
                 // Create an Intent and put the Bundle as extra
-                Intent intent = new Intent(context, Products.class);
-                intent.putExtras(bundle);
-                context.startActivity(intent);*/
-
-                Intent intent = new Intent(context.getApplicationContext(), Products.class);
+                Intent intent = new Intent(context.getApplicationContext(), ProductActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtras(bundle);
                 context.startActivity(intent);
             }
         });

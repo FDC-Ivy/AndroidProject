@@ -3,7 +3,6 @@ package com.example.androidproject.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -18,13 +17,9 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.androidproject.Activity.CustomerHome;
-import com.example.androidproject.Activity.Products;
 import com.example.androidproject.Adapter.RecyclerviewAdapter;
 import com.example.androidproject.Model.Branches;
 import com.example.androidproject.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {
@@ -84,7 +78,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 // Handle the click event
                 // Start the desired activity using an Intent
-                Intent intent = new Intent(context, Products.class);
+                Intent intent = new Intent(context, ProductActivity.class);
                 startActivity(intent);
             }
         });*/
@@ -94,7 +88,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                /*Intent intent = new Intent(context, Products.class);
+                /*Intent intent = new Intent(context, ProductActivity.class);
                 startActivity(intent);*/
                 Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show();
             }

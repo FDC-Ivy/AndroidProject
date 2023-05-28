@@ -6,10 +6,10 @@ public class Products {
     private String mProductName;
     private String mProductPrice;
     private String mProductDescription;
-    private String mProductImage;
+    private int mProductImage;
     private String mProductBranchID;
 
-    public Products(int productID, String productName, String productPrice, String productDescription, String productImage, String productBranchID){
+    public Products(int productID, String productName, String productPrice, String productDescription, int productImage, String productBranchID){
         this.mProductID = productID;
         this.mProductName = productName;
         this.mProductPrice = productPrice;
@@ -50,11 +50,11 @@ public class Products {
         this.mProductDescription = mProductDescription;
     }
 
-    public String getmProductImage() {
+    public int getmProductImage() {
         return mProductImage;
     }
 
-    public void setmProductImage(String mProductImage) {
+    public void setmProductImage(int mProductImage) {
         this.mProductImage = mProductImage;
     }
 

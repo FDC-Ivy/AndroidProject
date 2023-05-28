@@ -2,6 +2,7 @@ package com.example.androidproject.Auth;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 
@@ -24,9 +25,9 @@ public class SignIn {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     private String authid;
     private String mloginid;
-
+    private SharedPreferences sharedPreferences;
     // Function to handle user login
-    public void signInWithEmailAndPassword(String email, String password, Context context) {
+    public void signInWithEmailAndPassword(String email, String password, Context context, SharedPreferences sharedPreferences) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -39,6 +40,13 @@ public class SignIn {
                         // Retrieve user type
                         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
                         DatabaseReference userRef = usersRef.child(user.getUid());
+
+                        //Storing to Shared Preferences
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("user_id_prefs", userId);
+                        editor.putBoolean("isLoggedIn", true);
+                        editor.apply();
+
 
                         userRef.addValueEventListener(new ValueEventListener() {
                             @Override
