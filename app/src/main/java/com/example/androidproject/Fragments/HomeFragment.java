@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidproject.Adapter.RecyclerviewAdapter;
@@ -29,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -39,8 +42,15 @@ public class HomeFragment extends Fragment {
     private EditText branchaddress;
     private ArrayList<Branches> branchlist;
     private RelativeLayout btnBranchInfo;
-    Context context = getContext();
+    //Context context = getContext();
+    private Context context;
     private RecyclerviewAdapter adapter;
+    private TextView edittxt;
+
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = requireContext();
+    }
 
     //This is a fragment
     @Override
@@ -51,16 +61,17 @@ public class HomeFragment extends Fragment {
         databaseReference = firebaseDatabase.getReference("branches");
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view2 = inflater.inflate(R.layout.branch_view, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
-        adapter = new RecyclerviewAdapter(context, branchlist);
+
+        adapter = new RecyclerviewAdapter(getActivity().getApplicationContext(), branchlist);
         recyclerView.setAdapter(adapter);
 
         //display alert list
         displayData();
 
         mbtnadd = view.findViewById(R.id.btnadd);
-
         mbtnadd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,28 +80,13 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        View view2 = inflater.inflate(R.layout.branch_view, container, false);
-
-        /*
-        RelativeLayout relativeLayout = view2.findViewById(R.id.relativeLayout);
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Handle the click event
-                // Start the desired activity using an Intent
-                Intent intent = new Intent(context, ProductActivity.class);
-                startActivity(intent);
-            }
-        });*/
-        btnBranchInfo = view2.findViewById(R.id.branch_button);
-        //btnBranchInfo.setAdapter(adapter);
-        btnBranchInfo.setOnClickListener(new View.OnClickListener() {
+        //edit branch info
+        edittxt = view2.findViewById(R.id.edit_txt);
+        edittxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                /*Intent intent = new Intent(context, ProductActivity.class);
-                startActivity(intent);*/
-                Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Clicked: " , Toast.LENGTH_SHORT).show();
+                showFormDialog();
             }
         });
 
@@ -99,7 +95,7 @@ public class HomeFragment extends Fragment {
 
     //for branch add here
     private void showFormDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Branches");
 
         // Inflate the form layout XML file
@@ -113,6 +109,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Retrieve the entered form data
+                // Generate a new unique ID using push()
                 String bname = branchname.getText().toString();
                 String baddress = branchaddress.getText().toString();
 
@@ -157,8 +154,8 @@ public class HomeFragment extends Fragment {
                     branchlist.add(branch);
                 }
 
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                recyclerView.setAdapter(new RecyclerviewAdapter(getActivity().getApplicationContext(), branchlist));
+                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                recyclerView.setAdapter(new RecyclerviewAdapter(requireContext(), branchlist));
             }
 
             @Override
@@ -167,5 +164,14 @@ public class HomeFragment extends Fragment {
                 //Log.w("Firebase", "Failed to read value.", error.toException());
             }
         });
+    }
+
+    public void showAlertDialog(String data) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Dialog Title");
+        builder.setMessage("Dialog Message");
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

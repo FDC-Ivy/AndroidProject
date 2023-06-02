@@ -2,14 +2,14 @@ package com.example.androidproject.Model;
 
 public class Products {
 
-    private int mProductID;
+    private String mProductID;
     private String mProductName;
     private String mProductPrice;
     private String mProductDescription;
     private int mProductImage;
     private String mProductBranchID;
 
-    public Products(int productID, String productName, String productPrice, String productDescription, int productImage, String productBranchID){
+    public Products(String productID, String productName, String productPrice, String productDescription, int productImage, String productBranchID){
         this.mProductID = productID;
         this.mProductName = productName;
         this.mProductPrice = productPrice;
@@ -18,11 +18,11 @@ public class Products {
         this.mProductBranchID = productBranchID;
     }
 
-    public int getmProductID() {
+    public String getmProductID() {
         return mProductID;
     }
 
-    public void setmProductID(int mProductID) {
+    public void setmProductID(String mProductID) {
         this.mProductID = mProductID;
     }
 

@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:id="@+id/product_view_click"
+    android:clickable="true"
+    android:focusable="true"
     tools:context=".Activity.ProductActivity">
 
     <!--<TextView
@@ -14,9 +18,18 @@
         tools:layout_editor_absoluteX="174dp"
         tools:layout_editor_absoluteY="98dp" />-->
 
+    <Button
+        android:id="@+id/btn_add_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Product" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/btn_add_product"
         android:id="@+id/product_recycleview"/>
+
+
 
 </RelativeLayout>

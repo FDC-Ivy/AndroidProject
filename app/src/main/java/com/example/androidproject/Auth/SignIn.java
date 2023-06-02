@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.androidproject.Activity.CustomerHome;
 import com.example.androidproject.Activity.Login;
 import com.example.androidproject.Activity.SellerHome;
 import com.example.androidproject.DataManager.SharedPreferenceManager;
 import com.example.androidproject.Enum.UserType;
+import com.example.androidproject.Interface.SignInCallback;
+import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SignIn {
     // Get an instance of FirebaseAuth
-    FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
     private String authid;
     private String mloginid;
     private SharedPreferences sharedPreferences;
@@ -35,7 +38,8 @@ public class SignIn {
                     // User login successful
                     FirebaseUser user = auth.getCurrentUser();
                     if (user != null) {
-                        String userId = user.getUid();
+                        //String userId = user.getUid();
+                        SignInSingleton.getInstance().setAuthUserId(user.getUid());
 
                         // Retrieve user type
                         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -43,7 +47,7 @@ public class SignIn {
 
                         //Storing to Shared Preferences
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("user_id_prefs", userId);
+                        editor.putString("user_id_prefs", user.getUid());
                         editor.putBoolean("isLoggedIn", true);
                         editor.apply();
 
@@ -59,16 +63,17 @@ public class SignIn {
                                     if(usertype.equals(UserType.CUSTOMER.toString())){
 
                                         Bundle bundle = new Bundle();
-                                        bundle.putString("user_id", userId);
+                                        bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
                                         // Create an Intent and put the Bundle as extra
                                         Intent intent = new Intent(context, CustomerHome.class);
                                         intent.putExtras(bundle);
                                         context.startActivity(intent);
 
+
                                     }else if(usertype.equals(UserType.CASHIER.toString())){
 
                                         Bundle bundle = new Bundle();
-                                        bundle.putString("user_id", userId);
+                                        bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
                                         // Create an Intent and put the Bundle as extra
                                         Intent intent = new Intent(context, SellerHome.class);
                                         intent.putExtras(bundle);
@@ -95,8 +100,10 @@ public class SignIn {
                         String errorCode = exception.getErrorCode();
                         String errorMessage = exception.getMessage();
                         // Handle specific error codes or display a generic error message
+                        Toast.makeText(context, "error message: "+errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
     }
+
 }

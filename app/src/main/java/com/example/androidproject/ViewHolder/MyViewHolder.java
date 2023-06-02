@@ -2,6 +2,7 @@ package com.example.androidproject.ViewHolder;
 
 import android.media.Image;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
     public TextView txtBranchName;
     public TextView txtBranchAddress;
     public RelativeLayout relativeLayout;
+    public TextView txteditBranch;
 
     public MyViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -24,5 +26,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         txtBranchName = itemView.findViewById(R.id.branch_name);
         txtBranchAddress = itemView.findViewById(R.id.branch_address);
         relativeLayout = itemView.findViewById(R.id.branch_button);
+        txteditBranch = itemView.findViewById(R.id.edit_txt);
     }
 }

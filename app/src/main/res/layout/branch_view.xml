@@ -21,11 +21,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingRight="100dp"
         android:id="@+id/branch_name"
         android:layout_toEndOf="@id/branch_image"
         android:textColor="@color/black"
         android:textSize="20dp"
-        tools:text="Name"/>
+        tools:text="Nameaaaaaaaaaaaaaaaaaaaaaaaaaa"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -42,5 +43,16 @@
         android:layout_below="@id/branch_image"
         android:layout_marginTop="10dp"
         android:background="#DAD8D8"/>
+
+    <TextView
+        android:id="@+id/edit_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:text="Edit this branch"
+        android:textColor="@color/black"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignRight="@id/branch_name"/>
 
 </RelativeLayout>

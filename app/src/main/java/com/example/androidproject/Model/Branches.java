@@ -6,6 +6,8 @@ public class Branches {
     private String mBranchAddress;
     private int mBranchImage;
 
+    private String clickedBranchID;
+
     public Branches( String branchID, String branchName, String branchAddress, int branchImage){
         this.mBranchID = branchID;
         this.mBranchName = branchName;
@@ -44,5 +46,13 @@ public class Branches {
 
     public void setmBranchImage(int mBranchImage) {
         this.mBranchImage = mBranchImage;
+    }
+
+    public String getClickedBranchID() {
+        return clickedBranchID;
+    }
+
+    public void setClickedBranchID(String clickedBranchID) {
+        this.clickedBranchID = clickedBranchID;
     }
 }

@@ -12,7 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.androidproject.Auth.SignIn;
+import com.example.androidproject.Interface.SignInCallback;
+import com.example.androidproject.LoadingBar.LoadingBar;
 import com.example.androidproject.R;
+import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class Login extends AppCompatActivity {
@@ -33,12 +36,16 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        final LoadingBar loadingBar = new LoadingBar(Login.this);
+
         //if user is already logged in
         sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String loginuserid = sharedPreferences.getString("user_id_prefs","");
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
         if(isLoggedIn){
             Bundle bundle = new Bundle();
             bundle.putString("user_id", sharedPreferences.getString("user_id_prefs", ""));
+            SignInSingleton.getInstance().setAuthUserId(loginuserid);
             Intent intent = new Intent(Login.this, CustomerHome.class);
             intent.putExtras(bundle);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -53,14 +60,13 @@ public class Login extends AppCompatActivity {
         mtxtPassword = findViewById(R.id.txtPassword);
         mbtnLogin = findViewById(R.id.btnLogin);
 
-
         mbtnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                    SignIn signIn = new SignIn();
-                    signIn.signInWithEmailAndPassword(mtxtEmail.getText().toString(), mtxtPassword.getText().toString(), Login.this, sharedPreferences);
-
+                loadingBar.startLoadingDialog();
+                SignIn signIn = new SignIn();
+                signIn.signInWithEmailAndPassword(mtxtEmail.getText().toString(), mtxtPassword.getText().toString(), Login.this, sharedPreferences);
+                finish();
             }
         });
 
@@ -71,5 +77,6 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 }
