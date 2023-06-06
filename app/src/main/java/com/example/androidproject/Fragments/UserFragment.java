@@ -12,13 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.androidproject.Activity.AllTransactionActivity;
 import com.example.androidproject.Activity.CustomerHome;
 import com.example.androidproject.Activity.Login;
 import com.example.androidproject.R;
 
 public class UserFragment extends Fragment {
 
-    private Button btnLogout;
+    private Button btnLogout, btnTransactionHist;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -45,6 +46,15 @@ public class UserFragment extends Fragment {
                 startActivity(intent);
                 requireActivity().finish();
 
+            }
+        });
+
+        btnTransactionHist = view.findViewById(R.id.btn_transaction);
+        btnTransactionHist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AllTransactionActivity.class);
+                startActivity(intent);
             }
         });
 

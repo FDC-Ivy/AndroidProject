@@ -16,6 +16,8 @@
     <color name="dark_gray">#5C5C5C</color>
     <color name="darkIndigo">#171d4b</color>
     <color name="gooseBerry">#afe19f</color>
+    <color name="light_gray">#B3B3B3</color>
+
 
     <color name="edittext_border_color">#231F20</color>
 </resources>

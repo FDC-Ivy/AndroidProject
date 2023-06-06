@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -51,19 +52,26 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         //getting product id
         String productId = items.get(position).getmProductID();
-        String productPrice = items.get(position).getmProductPrice();
-        String branchId = items.get(position).getmProductBranchID();
 
-        holder.nameView.setText(items.get(position).getmProductName());
-        holder.emailView.setText(items.get(position).getmProductDescription());
-        holder.imageView.setImageResource(items.get(position).getmProductImage());
+        holder.productName.setText(items.get(position).getmProductName());
+        holder.productDesc.setText(items.get(position).getmProductDescription());
+        holder.productPrice.setText("Price: P"+items.get(position).getmProductPrice());
+        holder.productImg.setImageResource(items.get(position).getmProductImage());
 
         final Products data = items.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Handle item click event
-                showAddToCartDialog(context, productId, productPrice, branchId);
+                showAddToCartDialog(context, productId);
+            }
+        });
+
+        holder.editProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(context, "Clicked: " , Toast.LENGTH_SHORT).show();
+                productEditDialog(productId);
             }
         });
     }
@@ -79,7 +87,7 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
         return items.size();
     }
 
-    public void showAddToCartDialog(Context context, String productId, String productPrice, String branchId) {
+    public void showAddToCartDialog(Context context, String productId) {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("carts");
@@ -101,136 +109,88 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
 
         AlertDialog alertDialog = builder.create();
 
+        //Button add to cart
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String quantity = quantityEditText.getText().toString();
-
-                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference();
-                databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChild("carts")) {
-                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    boolean branchIdExists = false;
-                                    boolean productExists = false;
-                                    String childKeyCart = "";
 
-                                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                        String branchIDfromCarts = childSnapshot.child("cartbranchid").getValue(String.class);
-                                        String cartProductId = childSnapshot.child("cartproductid").getValue(String.class);
-                                        String cartProductQty = childSnapshot.child("cartqty").getValue(String.class);
-                                        childKeyCart = dataSnapshot.getKey();
-                                        int newQty = Integer.parseInt(cartProductQty) + Integer.parseInt(quantity);
-                                        if(cartProductId == null){
-                                            break;
-                                        }else{
-                                            if (cartProductId.equals(productId)) {
-                                                productExists = true;
+                        boolean isProductExists = false;
 
-                                                Map<String, Object> formData = new HashMap<>();
-                                                formData.put("cartproductid", productId);
-                                                formData.put("cartbranchid", branchId);
-                                                formData.put("cartuserid", SignInSingleton.getInstance().getAuthUserId());
-                                                formData.put("cartqty", String.valueOf(newQty));
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            String cartProductId = childSnapshot.child("cartproductid").getValue(String.class);
+                            String cartProductQty = childSnapshot.child("cartqty").getValue(String.class);
+                            String cartUserid = childSnapshot.child("cartuserid").getValue(String.class);
+                            String childKeyCart = childSnapshot.getKey();
 
-                                                // Get the key of the existing cart entry
-                                                String cartKey = childSnapshot.getKey();
+                            int newQty = Integer.parseInt(cartProductQty) + Integer.parseInt(quantity);
 
-                                                // Update the cart entry in the "carts" table
-                                                DatabaseReference cartEntryReference = databaseReference.child(cartKey);
-                                                cartEntryReference.setValue(formData)
-                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                // Cart update successful
-                                                                alertDialog.dismiss();
-                                                                Toast.makeText(context, "Successfully updated cart.", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
-                                                                // Handle update failure
-                                                                alertDialog.dismiss();
-                                                                Toast.makeText(context, "Failed to update cart.", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+                            if (cartProductId != null && cartProductId.equals(productId) && cartUserid.equals(SignInSingleton.getInstance().getAuthUserId())) {
+                                isProductExists = true;
 
-                                                break;
+                                Map<String, Object> formData = new HashMap<>();
+                                formData.put("cartid", childKeyCart);
+                                formData.put("cartproductid", productId);
+                                formData.put("cartuserid", SignInSingleton.getInstance().getAuthUserId());
+                                formData.put("cartqty", String.valueOf(newQty));
+
+                                // Update the cart entry in the "carts" table
+                                DatabaseReference cartEntryReference = databaseReference.child(childKeyCart);
+                                cartEntryReference.setValue(formData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // Cart update successful
+                                                alertDialog.dismiss();
+                                                Toast.makeText(context, "Successfully updated cart.", Toast.LENGTH_SHORT).show();
                                             }
-                                        }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Handle update failure
+                                                alertDialog.dismiss();
+                                                Toast.makeText(context, "Failed to update cart.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
 
-                                        if (branchIDfromCarts.equals(branchId)) {
-                                            branchIdExists = true;
-                                            break;
-                                        }
-                                    }
+                                break;
+                            }
+                        }
 
-                                    /*if(productExists){
-                                        Map<String, Object> formData = new HashMap<>();
-                                        formData.put("cartproductid", productId);
-                                        formData.put("cartbranchid", branchId);
-                                        formData.put("cartuserid", SignInSingleton.getInstance().getAuthUserId());
-                                        formData.put("cartqty", quantity);
+                        if (!isProductExists) {
+                            // Create a new cart entry
+                            DatabaseReference newChildRef = databaseReference.push();
+                            String newCartChildKey = newChildRef.getKey();
 
-                                        // Update the data in the Firebase Realtime Database
-                                        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference().child("carts").child(childKeyCart).child(productId);
-                                        databaseReference3.updateChildren(formData)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Toast.makeText(context, "Branch updated successfully", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(context, "Failed to update branch: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                    }*/
-
-                                    if (branchIdExists && !productExists) {
-                                        // Branch ID exists in the "carts" table
-                                        Map<String, Object> formData = new HashMap<>();
-                                        formData.put("cartproductid", productId);
-                                        formData.put("cartbranchid", branchId);
-                                        formData.put("cartuserid", SignInSingleton.getInstance().getAuthUserId());
-                                        formData.put("cartqty", quantity);
-
-                                        // Save the form data to Firebase Realtime Database
-                                        databaseReference.push().setValue(formData);
-                                        alertDialog.dismiss();
-
-                                        Toast.makeText(context, "Successfully added to cart.", Toast.LENGTH_SHORT).show();
-                                    } else if (!branchIdExists && !productExists){
-                                        // Branch ID does not exist in the "carts" table
-                                        showWarningIfNewBranch(context);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError error) {
-                                    // Failed to read value
-                                    // Log.w("Firebase", "Failed to read value.", error.toException());
-                                }
-                            });
-                        } else {
-                            // "carts" table does not exist
                             Map<String, Object> formData = new HashMap<>();
+                            formData.put("cartid", newCartChildKey);
                             formData.put("cartproductid", productId);
-                            formData.put("cartbranchid", branchId);
                             formData.put("cartuserid", SignInSingleton.getInstance().getAuthUserId());
                             formData.put("cartqty", quantity);
 
-                            // Save the form data to Firebase Realtime Database
-                            databaseReference.push().setValue(formData);
-                            alertDialog.dismiss();
-
-                            Toast.makeText(context, "Successfully added to cart.", Toast.LENGTH_SHORT).show();
+                            // Save the new cart entry in the "carts" table
+                            DatabaseReference newCartEntryReference = databaseReference.push();
+                            newCartEntryReference.setValue(formData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // New cart entry creation successful
+                                        alertDialog.dismiss();
+                                        Toast.makeText(context, "Successfully added to cart.", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        // Handle creation failure
+                                        alertDialog.dismiss();
+                                        Toast.makeText(context, "Failed to add to cart.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                         }
                     }
 
@@ -277,45 +237,134 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
         }
     }
 
-    public void showWarningIfNewBranch(Context context){
+    private AlertDialog alertDialog;
+    //update product
+    private void productEditDialog(String prodid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Warning: You are adding an order from different branch.")
-                .setMessage("All your items in cart will be removed, continue?")
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Handle OK button click
-                        deleteAllCarts();
-                    }
-                })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Handle Cancel button click
-                    }
-                });
+        builder.setTitle("Products");
 
-        AlertDialog alertDialog = builder.create();
+        // Inflate the form layout XML file
+        View formView = LayoutInflater.from(context).inflate(R.layout.product_edit, null);
+        builder.setView(formView);
+
+        TextView deleteProd;
+        EditText prodname, prodprice, proddesc;
+        deleteProd = formView.findViewById(R.id.delete_prod);
+        prodname = formView.findViewById(R.id.product_edit_name);
+        prodprice = formView.findViewById(R.id.product_edit_price);
+        proddesc = formView.findViewById(R.id.product_edit_desc);
+
+        //deleting a product
+        deleteProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                databaseReference = firebaseDatabase.getReference("products").child(prodid);
+                databaseReference.removeValue()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Deletion successful
+                            Toast.makeText(context, "Successfully removed.", Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle any errors
+                            Toast.makeText(context, "Failed to remove.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
+        });
+
+        //updating happens here
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("products");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                boolean isProductExists = false;
+
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    String prod_name = childSnapshot.child("productname").getValue(String.class);
+                    String prod_desc = childSnapshot.child("productdesc").getValue(String.class);
+                    String prod_price = childSnapshot.child("productprice").getValue(String.class);
+                    String prod_id = childSnapshot.getKey();
+
+                    if(prod_id == prodid){
+                        prodname.setText(prod_name);
+                        prodprice.setText(prod_price);
+                        proddesc.setText(prod_desc);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Handle any errors
+            }
+        });
+
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Retrieve the entered form data
+                String pname = prodname.getText().toString();
+                String pprice = prodprice.getText().toString();
+                String pdesc = proddesc.getText().toString();
+
+                // Create a data object or HashMap to hold the updated form data
+                Map<String, Object> updateData = new HashMap<>();
+                updateData.put("productname", pname);
+                updateData.put("productprice", pprice);
+                updateData.put("productdesc", pdesc);
+
+                // Update the form data in Firebase Realtime Database
+                databaseReference.child(prodid).updateChildren(updateData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Data update successful
+                            Toast.makeText(context, "Product updated successfully.", Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle update failure
+                            Toast.makeText(context, "Failed to update product.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+
+        alertDialog = builder.create();
         alertDialog.show();
     }
 
     public void deleteAllCarts(){
         DatabaseReference cartsReference = FirebaseDatabase.getInstance().getReference().child("carts");
         cartsReference.removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Deletion successful
-                        Toast.makeText(context, "All items removed from your cart.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        Toast.makeText(context, "Failed to remove items from your cart.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    // Deletion successful
+                    Toast.makeText(context, "All items removed from your cart.", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Handle any errors
+                    Toast.makeText(context, "Failed to remove items from your cart.", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 }

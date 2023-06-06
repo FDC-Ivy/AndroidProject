@@ -5,7 +5,17 @@ public class AddToCart {
     private String cartProductName;
     private String cartProductPrice;
     private String cartProductQty;
-    private String cartProductImage;
+    private int cartProductImage;
+    private String cartProductID;
+
+    public AddToCart(String cartID, String cartProductName, String cartProductPrice, String cartProductQty, int cartProductImage, String cartProductID){
+        this.cartID = cartID;
+        this.cartProductName = cartProductName;
+        this.cartProductPrice = cartProductPrice;
+        this.cartProductQty = cartProductQty;
+        this.cartProductImage = cartProductImage;
+        this.cartProductID = cartProductID;
+    }
 
     public String getCartID() {
         return cartID;
@@ -39,11 +49,19 @@ public class AddToCart {
         this.cartProductQty = cartProductQty;
     }
 
-    public String getCartProductImage() {
+    public int getCartProductImage() {
         return cartProductImage;
     }
 
-    public void setCartProductImage(String cartProductImage) {
+    public void setCartProductImage(int cartProductImage) {
         this.cartProductImage = cartProductImage;
+    }
+
+    public String getCartProductID() {
+        return cartProductID;
+    }
+
+    public void setCartProductID(String cartProductID) {
+        this.cartProductID = cartProductID;
     }
 }

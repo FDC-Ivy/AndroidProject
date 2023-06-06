@@ -15,13 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.androidproject.Adapter.RecyclerviewAdapter;
-import com.example.androidproject.Model.Branches;
+import com.example.androidproject.Adapter.ProductRecyclerViewAdapter;
+import com.example.androidproject.Model.Products;
 import com.example.androidproject.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,21 +33,26 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+
+//upload image imports
+
+
 
 public class HomeFragment extends Fragment {
-
-    private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
-    private Button mbtnadd;
-    private EditText branchname;
-    private EditText branchaddress;
-    private ArrayList<Branches> branchlist;
-    private RelativeLayout btnBranchInfo;
-    //Context context = getContext();
-    private Context context;
-    private RecyclerviewAdapter adapter;
-    private TextView edittxt;
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    Context context = getContext();
+    private TextView deleteAllProd;
+    private TextInputEditText prodname, prodprice;
+    private EditText proddesc;
+    private Button btnAddProduct;
+    private ArrayList<Products> productlist;
+    private RecyclerView prodRecyclerView;
+    private ProductRecyclerViewAdapter adapter;
+    private String branchid = "";
+
+    //upload image variables
+
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -57,22 +64,19 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         //Saving to database
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("branches");
+        databaseReference = firebaseDatabase.getReference("products");
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        View view2 = inflater.inflate(R.layout.branch_view, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
-
-        adapter = new RecyclerviewAdapter(getActivity().getApplicationContext(), branchlist);
-        recyclerView.setAdapter(adapter);
+        prodRecyclerView = view.findViewById(R.id.product_recycleview);
+        adapter = new ProductRecyclerViewAdapter(getActivity().getApplicationContext(), productlist);
+        prodRecyclerView.setAdapter(adapter);
 
         //display alert list
         displayData();
 
-        mbtnadd = view.findViewById(R.id.btnadd);
-        mbtnadd.setOnClickListener(new View.OnClickListener() {
+        btnAddProduct = view.findViewById(R.id.btn_add_product);
+        btnAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //showing the alert dialogue for branch add
@@ -80,13 +84,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        //edit branch info
-        edittxt = view2.findViewById(R.id.edit_txt);
-        edittxt.setOnClickListener(new View.OnClickListener() {
+        deleteAllProd = view.findViewById(R.id.delete_all_prod);
+        deleteAllProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(context, "Clicked: " , Toast.LENGTH_SHORT).show();
-                showFormDialog();
+                //showing the alert dialogue for branch add
+                deleteAllPrompt();
             }
         });
 
@@ -96,30 +99,35 @@ public class HomeFragment extends Fragment {
     //for branch add here
     private void showFormDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Branches");
+        builder.setTitle("Products");
 
         // Inflate the form layout XML file
-        View formView = getLayoutInflater().inflate(R.layout.branches_add, null);
+        View formView = getLayoutInflater().inflate(R.layout.product_add, null);
         builder.setView(formView);
 
-        branchname = formView.findViewById(R.id.txt_branchname);
-        branchaddress = formView.findViewById(R.id.txt_branchaddress);
+        prodname = formView.findViewById(R.id.txt_prod_name);
+        prodprice = formView.findViewById(R.id.txt_prod_price);
+        proddesc = formView.findViewById(R.id.txt_prod_desc);
 
-        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Retrieve the entered form data
-                // Generate a new unique ID using push()
-                String bname = branchname.getText().toString();
-                String baddress = branchaddress.getText().toString();
+                String pname = prodname.getText().toString();
+                String pprice = prodprice.getText().toString();
+                String pdesc = proddesc.getText().toString();
 
+                DatabaseReference newChildRef = databaseReference.push();
+                String childKey = newChildRef.getKey();
                 // Create a data object or HashMap to hold the form data
                 Map<String, Object> formData = new HashMap<>();
-                formData.put("branchname", bname);
-                formData.put("branchaddress", baddress);
+                formData.put("productid", childKey);
+                formData.put("productname", pname);
+                formData.put("productprice", pprice);
+                formData.put("productdesc", pdesc);
 
                 // Save the form data to Firebase Realtime Database
-                databaseReference.push().setValue(formData);
+                newChildRef.setValue(formData);
             }
         });
 
@@ -137,25 +145,24 @@ public class HomeFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //arraylist
-                branchlist = new ArrayList<Branches>();
+                productlist = new ArrayList<Products>();
 
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     // Retrieve child data
                     String childKey = childSnapshot.getKey();
 
-                    String branch_name = childSnapshot.child("branchname").getValue(String.class);
-                    String branch_address = childSnapshot.child("branchaddress").getValue(String.class);
+                    String prod_name = childSnapshot.child("productname").getValue(String.class);
+                    String prod_price = childSnapshot.child("productprice").getValue(String.class);
+                    String prod_desc = childSnapshot.child("productdesc").getValue(String.class);
+                    String prod_branchid = childSnapshot.child("productbranchid").getValue(String.class);
 
-                    // Display child data
-                    //Log.d("ChildData", "Key: " + childKey + ", Value: " + childValue);
+                    Products prods = new Products(childKey, prod_name, prod_price, prod_desc, R.drawable.pxfuel, branchid);
+                    productlist.add(prods);
 
-                    //items.add(new Branches(childKey, branch_name, branch_address, R.drawable.pxfuel));
-                    Branches branch = new Branches(childKey, branch_name, branch_address, R.drawable.pxfuel);
-                    branchlist.add(branch);
                 }
 
-                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-                recyclerView.setAdapter(new RecyclerviewAdapter(requireContext(), branchlist));
+                prodRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                prodRecyclerView.setAdapter(new ProductRecyclerViewAdapter(context, productlist));
             }
 
             @Override
@@ -166,11 +173,46 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void showAlertDialog(String data) {
+    public void deleteAllProducts(){
+        DatabaseReference prodReference = FirebaseDatabase.getInstance().getReference().child("products");
+        prodReference.removeValue()
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    // Deletion successful
+                    Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Handle any errors
+                    Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    public void deleteAllPrompt() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Are you sure you want to delete all products?");
+        builder.setPositiveButton("Delete All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteAllProducts();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Dialog Title");
         builder.setMessage("Dialog Message");
         builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
