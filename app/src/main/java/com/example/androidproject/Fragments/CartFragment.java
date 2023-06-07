@@ -168,8 +168,9 @@ public class CartFragment extends Fragment {
                                     String prodid = dataSnapshot.child("productid").getValue(String.class);
                                     String productName = dataSnapshot.child("productname").getValue(String.class);
                                     String productPrice = dataSnapshot.child("productprice").getValue(String.class);
+                                    String pImage = dataSnapshot.child("productimage").getValue(String.class);
 
-                                    AddToCart addToCart = new AddToCart(childKey, productName, productPrice, cart_qty, R.drawable.pxfuel, cart_prod_id);
+                                    AddToCart addToCart = new AddToCart(childKey, productName, productPrice, cart_qty, pImage, cart_prod_id);
                                     cartlist.add(addToCart);
 
                                     // Update the RecyclerView adapter
@@ -306,10 +307,7 @@ public class CartFragment extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        Random random = new Random();
-        if(randomNum != 0) {
-            randomNum = random.nextInt(1000000000);
-        }
+
     }
 
     private void processPayment(){
@@ -394,6 +392,12 @@ public class CartFragment extends Fragment {
         } else if (requestCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
             Toast.makeText(context, "Invalid", Toast.LENGTH_SHORT).show();
         }
+
+        Random random = new Random();
+        if(randomNum != 0) {
+            randomNum = random.nextInt(1000000000);
+        }
+
     }
 
 }

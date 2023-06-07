@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidproject.Model.AddToCart;
+import com.example.androidproject.Model.Products;
 import com.example.androidproject.R;
 import com.example.androidproject.Singleton.SignInSingleton;
 import com.example.androidproject.ViewHolder.CartViewHolder;
@@ -58,7 +59,10 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
         holder.cartProductName.setText(items.get(position).getCartProductName());
         holder.cartProductPrice.setText("Price: "+items.get(position).getCartProductPrice());
         holder.cartProductQty.setText("Qty: "+items.get(position).getCartProductQty());
-        holder.cartImage.setImageResource(items.get(position).getCartProductImage());
+        //holder.cartImage.setText(items.get(position).getCartProductImage());
+
+        AddToCart cart = items.get(position);
+        holder.bind(cart);
 
         //to make recycleview clickable
         holder.itemView.setOnClickListener(new View.OnClickListener() {

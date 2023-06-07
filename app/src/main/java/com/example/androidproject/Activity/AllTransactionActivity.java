@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -55,6 +56,18 @@ public class AllTransactionActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view_all_transaction);
 
         displayTransaction();
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                displayTransaction();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+
         /*List<TransactionHistory> items = new ArrayList<TransactionHistory>();
         items.add(new TransactionHistory("John wick","john.wick@email.com","John wick","John wick","John wick"));
         items.add(new TransactionHistory("John wick","john.wick@email.com","John wick","John wick","John wick"));
@@ -166,6 +179,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     // Retrieve the data for each transaction
                     mtransactionId = snapshot.child("transactionId").getValue(String.class);
+                    String idid = mtransactionId;
                     String transactionTotal = snapshot.child("transactionTotal").getValue(String.class);
                     double total = Double.parseDouble(transactionTotal);
                     String transactionDate = snapshot.child("transactionTimeStamp").getValue(String.class);
@@ -199,20 +213,21 @@ public class AllTransactionActivity extends AppCompatActivity {
                             if (mergedProductNamesSnapshot.exists()) {
                                 String mergedProductName = mergedProductNamesSnapshot.child("mergedproductname").getValue(String.class);
 
-                                TransactionHistory transactions = new TransactionHistory("Transaction #: "+mtransactionId, mergedProductName, "Total: P"+formattedTotalPrice, transactionDate);
+                                TransactionHistory transactions = new TransactionHistory("Transaction #: "+idid, mergedProductName, "Total: P"+formattedTotalPrice, transactionDate);
                                 transactionlist.add(transactions);
                             }
                             recyclerView.setLayoutManager(new LinearLayoutManager(AllTransactionActivity.this));
                             recyclerView.setAdapter(new AllTransactionAdapter(getApplicationContext(), transactionlist));
                         }
-
-
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             // Handle any errors
                         }
                     });
+
+
+                    /*TransactionHistory transactions = new TransactionHistory("Transaction #: "+mtransactionId, "mergedProductName", "Total: P"+formattedTotalPrice, transactionDate);
+                    transactionlist.add(transactions);*/
 
 
                     /*TransactionHistory transactions = new TransactionHistory(mtransactionId, "aa", "cart_qty", "price", "transactionDate");
