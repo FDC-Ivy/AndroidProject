@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/delete_all_prod"
         android:text="Delete All"
+        android:visibility="gone"
         android:gravity="right"
         android:textColor="@color/purple_700"
         android:textSize="16dp"/>
@@ -22,13 +23,23 @@
         android:id="@+id/btn_add_product"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_below="@id/delete_all_prod"
         android:text="Add Product" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_below="@id/btn_add_product"
-        android:id="@+id/product_recycleview"/>
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/product_recycleview"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
 </RelativeLayout>

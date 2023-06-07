@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import com.example.androidproject.Adapter.ProductRecyclerViewAdapter;
 import com.example.androidproject.Model.Products;
 import com.example.androidproject.R;
+import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -119,8 +121,45 @@ public class HomeFragment extends Fragment {
 
         //display alert list
         displayData();
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                displayData();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
 
         btnAddProduct = view.findViewById(R.id.btn_add_product);
+        deleteAllProd = view.findViewById(R.id.delete_all_prod);
+
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    String usertype = dataSnapshot.child("usertype").getValue(String.class);
+
+                    if(usertype.equals("CUSTOMER")){
+                        btnAddProduct.setVisibility(View.GONE);
+                        deleteAllProd.setVisibility(View.GONE);
+                    }else{
+                        btnAddProduct.setVisibility(View.VISIBLE);
+                        deleteAllProd.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {}
+        });
+
+
+
+
         btnAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +168,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        deleteAllProd = view.findViewById(R.id.delete_all_prod);
         deleteAllProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,19 +222,6 @@ public class HomeFragment extends Fragment {
                 String pname = prodname.getText().toString();
                 String pprice = prodprice.getText().toString();
                 String pdesc = proddesc.getText().toString();
-
-                /*DatabaseReference newChildRef = databaseReference.push();
-                String childKey = newChildRef.getKey();
-                // Create a data object or HashMap to hold the form data
-                Map<String, Object> formData = new HashMap<>();
-                formData.put("productid", childKey);
-                formData.put("productname", pname);
-                formData.put("productprice", pprice);
-                formData.put("productdesc", pdesc);
-                formData.put("productimage", String.valueOf(imageUri));
-
-                // Save the form data to Firebase Realtime Database
-                newChildRef.setValue(formData);*/
 
 
 

@@ -59,8 +59,15 @@ public class SignIn {
                                     String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
 
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
+                                    // Create an Intent and put the Bundle as extra
+                                    Intent intent = new Intent(context, CustomerHome.class);
+                                    intent.putExtras(bundle);
+                                    context.startActivity(intent);
 
-                                    if(usertype.equals(UserType.CUSTOMER.toString())){
+
+                                    /*if(usertype.equals(UserType.CUSTOMER.toString())){
 
                                         Bundle bundle = new Bundle();
                                         bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
@@ -78,7 +85,7 @@ public class SignIn {
                                         Intent intent = new Intent(context, SellerHome.class);
                                         intent.putExtras(bundle);
                                         context.startActivity(intent);
-                                    }
+                                    }*/
 
                                     /*SharedPreferenceManager manager = SharedPreferenceManager.getInstance();
                                     manager.saveSharedPreference(this, "user_id", userId);*/

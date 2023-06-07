@@ -3,6 +3,7 @@ package com.example.androidproject.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +37,7 @@ public class Registration extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegistration);
 
         //button of registration
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        /*btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -53,7 +54,42 @@ public class Registration extends AppCompatActivity {
                     signUp.createUserWithNameEmailAndPassword(customerObj.getmCustomerFirstName(), customerObj.getmCustomerLastName(), customerObj.getmCustomerEmail(), customerObj.getmCustomerUserType().toString(), customerObj.getmCustomerPassword(), Registration.this);
                 }
             }
+        });*/
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String firstName = txtFirstName.getText().toString().trim();
+                String lastName = txtLastName.getText().toString().trim();
+                String email = txtEmail.getText().toString().trim();
+                String password = txtPassword.getText().toString().trim();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                        Toast.makeText(Registration.this, "Please fill out all the fields", Toast.LENGTH_SHORT).show();
+                    } else if (!isValidEmail(email)) {
+                        Toast.makeText(Registration.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    } else {
+                        customerObj.setmCustomerFirstName(firstName);
+                        customerObj.setmCustomerLastName(lastName);
+                        customerObj.setmCustomerEmail(email);
+                        customerObj.setmCustomerPassword(password);
+                        customerObj.setmCustomerUserType(UserType.CUSTOMER);
+
+                        SignUp signUp = new SignUp();
+                        signUp.createUserWithNameEmailAndPassword(
+                                customerObj.getmCustomerFirstName(),
+                                customerObj.getmCustomerLastName(),
+                                customerObj.getmCustomerEmail(),
+                                customerObj.getmCustomerUserType().toString(),
+                                customerObj.getmCustomerPassword(),
+                                Registration.this
+                        );
+                    }
+                }
+            }
         });
+
 
         //hyperlink to Login page/activity
         txtHyperlinkToLogin.setOnClickListener(new View.OnClickListener() {
@@ -64,4 +100,10 @@ public class Registration extends AppCompatActivity {
             }
         });
     }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$";
+        return email.matches(emailRegex);
+    }
+
 }

@@ -31,9 +31,15 @@
             android:exported="false" />
         <activity
             android:name=".Activity.CustomerHome"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_customer_home"
-            android:theme="@style/Theme.AndroidProject.NoActionBar" />
+            android:theme="@style/Theme.AndroidProject.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Activity.SellerRegistration"
             android:exported="false" />
@@ -42,12 +48,7 @@
             android:exported="false" />
         <activity
             android:name=".Activity.Login"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
         </activity>
         <activity
             android:name=".Activity.Registration"

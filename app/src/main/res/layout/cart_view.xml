@@ -3,12 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
     android:layout_marginTop="10dp"
-    android:background="@color/white"
+    android:layout_marginRight="16dp"
+    android:layout_marginLeft="16dp"
+    android:padding="15dp"
+    android:background="@drawable/testbackground"
     android:clickable="true"
     android:focusable="true"
-    android:id="@+id/branch_button"
-    android:padding="16dp">
+    android:id="@+id/branch_button">
 
     <ImageView
         android:id="@+id/cart_product_image"
@@ -59,13 +62,6 @@
         android:focusable="true"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@id/cart_product_name"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@id/cart_product_image"
-        android:layout_marginTop="10dp"
-        android:background="#DAD8D8"/>
 
 
 </RelativeLayout>
