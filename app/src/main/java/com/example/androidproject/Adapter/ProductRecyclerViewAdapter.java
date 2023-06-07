@@ -32,7 +32,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +61,19 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
         holder.productName.setText(items.get(position).getmProductName());
         holder.productDesc.setText(items.get(position).getmProductDescription());
         holder.productPrice.setText("Price: P"+items.get(position).getmProductPrice());
-        holder.productImg.setImageResource(items.get(position).getmProductImage());
+        //holder.productImg.setImageResource(items.get(position).getmProductImage());
+
+        Products product = items.get(position);
+        holder.bind(product);
+
+        //String imageUrl = "https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/images%2Fimage.jpg?alt=media&token=https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/content%3A%2Fmedia%2Fexternal_primary%2Fimages%2Fmedia%2F1000001118?alt=media&token=40923164-4745-4412-b870-eb1206fb9689";
+        //Picasso.get().load(items.get(position).getmProductImage()).into(holder.productImg);
+
+
+
+
+
+
 
         final Products data = items.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {

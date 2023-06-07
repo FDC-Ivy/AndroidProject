@@ -139,7 +139,7 @@ public class ProductActivity extends AppCompatActivity {
                     //items.add(new Branches(childKey, branch_name, branch_address, R.drawable.pxfuel));
 
                     if(branchid.equals(prod_branchid)){
-                        Products prods = new Products(childKey, prod_name, prod_price, prod_desc, R.drawable.pxfuel, branchid);
+                        Products prods = new Products(childKey, prod_name, prod_price, prod_desc, "content://media/external_primary/images/media/1000001552", branchid);
                         productlist.add(prods);
 
                     }

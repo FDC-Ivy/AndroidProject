@@ -1,38 +1,60 @@
 package com.example.androidproject.Fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidproject.Adapter.ProductRecyclerViewAdapter;
 import com.example.androidproject.Model.Products;
 import com.example.androidproject.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 //upload image imports
 
@@ -52,11 +74,34 @@ public class HomeFragment extends Fragment {
     private String branchid = "";
 
     //upload image variables
-
+    private ImageView productImage;
+    private FloatingActionButton fab;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private Uri imageUri;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = requireContext();
+
+        //image picker
+        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Intent data = result.getData();
+                            imageUri = data.getData();
+
+                            Picasso.get().load(imageUri).into(productImage);
+                            productImage.setVisibility(View.VISIBLE);
+                            Toast.makeText(context, "Image added", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+
+                        }
+                    }
+                });
     }
 
     //This is a fragment
@@ -108,6 +153,25 @@ public class HomeFragment extends Fragment {
         prodname = formView.findViewById(R.id.txt_prod_name);
         prodprice = formView.findViewById(R.id.txt_prod_price);
         proddesc = formView.findViewById(R.id.txt_prod_desc);
+        productImage = formView.findViewById(R.id.product_image);
+        fab = formView.findViewById(R.id.floatingActionButton);
+
+
+        //image button
+        productImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFile();
+            }
+        });
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFile();
+            }
+        });
+
+
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
@@ -125,9 +189,11 @@ public class HomeFragment extends Fragment {
                 formData.put("productname", pname);
                 formData.put("productprice", pprice);
                 formData.put("productdesc", pdesc);
+                formData.put("productimage", String.valueOf(imageUri));
 
                 // Save the form data to Firebase Realtime Database
                 newChildRef.setValue(formData);
+                saveImageToFirebase(imageUri);
             }
         });
 
@@ -155,14 +221,47 @@ public class HomeFragment extends Fragment {
                     String prod_price = childSnapshot.child("productprice").getValue(String.class);
                     String prod_desc = childSnapshot.child("productdesc").getValue(String.class);
                     String prod_branchid = childSnapshot.child("productbranchid").getValue(String.class);
+                    String pImage = childSnapshot.child("productimage").getValue(String.class);
 
-                    Products prods = new Products(childKey, prod_name, prod_price, prod_desc, R.drawable.pxfuel, branchid);
-                    productlist.add(prods);
+
+
+
+
+                    String imgPath = pImage;
+                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = mStorage.getReference().child(imgPath);
+
+                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+
+                            String pURL = String.valueOf(uri);
+
+                            Products prods = new Products(childKey, prod_name, prod_price, prod_desc, pURL,branchid);
+                            productlist.add(prods);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+
+                        }
+                    });
+
+                    prodRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    prodRecyclerView.setAdapter(new ProductRecyclerViewAdapter(context, productlist));
+
+
+                    /*Products prods = new Products(childKey, prod_name, prod_price, prod_desc, pURL,branchid);
+                    productlist.add(prods);*/
+
+                    //Products prods = new Products(childKey, prod_name, prod_price, prod_desc, R.drawable.pxfuel, branchid);
+                   /* Products prods = new Products(childKey, prod_name, prod_price, prod_desc,  "https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/content%3A%2Fmedia%2Fexternal_primary%2Fimages%2Fmedia%2F1000001118?alt=media&token=40923164-4745-4412-b870-eb1206fb9689&_gl=1*h64lj8*_ga*MjA4NzUzNDYzNS4xNjg0OTMxMzcy*_ga_CW55HF8NVT*MTY4NjExNDM5OC40Ni4wLjE2ODYxMTQzOTguMC4wLjA.",branchid);
+                    productlist.add(prods);*/
 
                 }
 
-                prodRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-                prodRecyclerView.setAdapter(new ProductRecyclerViewAdapter(context, productlist));
+                /*prodRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                prodRecyclerView.setAdapter(new ProductRecyclerViewAdapter(context, productlist));*/
             }
 
             @Override
@@ -207,6 +306,42 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
+    //opening file when uploading image from gallery
+    private void openFile() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+    private void saveImageToFirebase(Uri imageUri) {
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageRef.child(String.valueOf(imageUri));
+        UploadTask uploadTask = imageRef.putFile(imageUri);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // The image was uploaded successfully
+                // Get the download URL of the uploaded image
+                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        // Handle the success case, you can use the uri to retrieve the uploaded image URL
+                        String imageUrl = uri.toString();
+                        // Do something with the image URL
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors that occurred while uploading the image
+            }
+        });
+
+
+    }
+
+    //template of alert dialog
     public void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Dialog Title");

@@ -6,10 +6,20 @@ public class Products {
     private String mProductName;
     private String mProductPrice;
     private String mProductDescription;
-    private int mProductImage;
+    //private int mProductImage;
+    private String mProductImage;
     private String mProductBranchID;
 
-    public Products(String productID, String productName, String productPrice, String productDescription, int productImage, String productBranchID){
+    /*public Products(String productID, String productName, String productPrice, String productDescription, int productImage, String productBranchID){
+        this.mProductID = productID;
+        this.mProductName = productName;
+        this.mProductPrice = productPrice;
+        this.mProductDescription = productDescription;
+        this.mProductImage = productImage;
+        this.mProductBranchID = productBranchID;
+    }*/
+
+    public Products(String productID, String productName, String productPrice, String productDescription, String productImage, String productBranchID){
         this.mProductID = productID;
         this.mProductName = productName;
         this.mProductPrice = productPrice;
@@ -50,11 +60,19 @@ public class Products {
         this.mProductDescription = mProductDescription;
     }
 
-    public int getmProductImage() {
+    /*public int getmProductImage() {
         return mProductImage;
     }
 
     public void setmProductImage(int mProductImage) {
+        this.mProductImage = mProductImage;
+    }*/
+
+    public String getmProductImage() {
+        return mProductImage;
+    }
+
+    public void setmProductImage(String mProductImage) {
         this.mProductImage = mProductImage;
     }
 
