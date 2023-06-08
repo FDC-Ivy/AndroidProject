@@ -11,8 +11,8 @@
     android:padding="16dp">
 
     <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/branch_image"
         android:layout_marginRight="10dp"
         android:layout_centerVertical="true"

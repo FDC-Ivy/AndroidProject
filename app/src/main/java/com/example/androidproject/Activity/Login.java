@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ public class Login extends AppCompatActivity {
     //to store user data and not ask to login again
     private SharedPreferences sharedPreferences;
 
+    private ProgressBar loadingBar;
     //Firebase Database
     //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://project1-4a559-default-rtdb.firebaseio.com/");;
 
@@ -41,7 +44,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final LoadingBar loadingBar = new LoadingBar(Login.this);
+        loadingBar = findViewById(R.id.loadingBar);
+        //final LoadingBar loadingBar = new LoadingBar(Login.this);
 
             mtxtHyperlinkToRegistration = findViewById(R.id.txtHyperlinkToRegistration);
             mtxtEmail = findViewById(R.id.txtEmail);
@@ -77,11 +81,12 @@ public class Login extends AppCompatActivity {
                     } else if (password.isEmpty()) {
                         Toast.makeText(Login.this, "Please enter your password", Toast.LENGTH_SHORT).show();
                     } else {
+                        showLoadingBar();
+                        simulateLoading();
+
                         // Validation passed, proceed with sign-in
-                        loadingBar.startLoadingDialog();
                         SignIn signIn = new SignIn();
                         signIn.signInWithEmailAndPassword(email, password, Login.this, sharedPreferences);
-                        loadingBar.dismissDialog();
                         //finish();
                     }
                 }
@@ -102,5 +107,26 @@ public class Login extends AppCompatActivity {
         String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$";
         return email.matches(emailRegex);
     }
+
+    private void showLoadingBar() {
+        loadingBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoadingBar() {
+        loadingBar.setVisibility(View.GONE);
+    }
+
+    private void simulateLoading() {
+        // Simulate a time-consuming task (e.g., fetching data from a network)
+        // Here, we use a Handler to delay the hiding of the loading bar after 3 seconds
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Hide loading bar after the simulated loading is complete
+                hideLoadingBar();
+            }
+        }, 3000); // Delay for 3 seconds
+    }
+
 
 }

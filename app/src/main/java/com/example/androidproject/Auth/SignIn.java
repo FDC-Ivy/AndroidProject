@@ -107,7 +107,7 @@ public class SignIn {
                         String errorCode = exception.getErrorCode();
                         String errorMessage = exception.getMessage();
                         // Handle specific error codes or display a generic error message
-                        Toast.makeText(context, "error message: "+errorMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Login failed, please double check your credentials.", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

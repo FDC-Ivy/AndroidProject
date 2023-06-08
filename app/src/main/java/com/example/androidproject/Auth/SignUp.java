@@ -110,5 +110,15 @@ public class SignUp {
                     // Handle any errors that occur during data saving
                     // Display an error message or take appropriate action
                 });
+
+        userRef.child("userimage").setValue("")
+                .addOnSuccessListener(aVoid -> {
+                    // User name saved successfully
+                    // You can perform additional actions here if needed
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors that occur during data saving
+                    // Display an error message or take appropriate action
+                });
     }
 }

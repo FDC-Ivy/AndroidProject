@@ -2,6 +2,8 @@ package com.example.androidproject.Fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import static com.google.common.io.Files.getFileExtension;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -131,10 +133,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         btnAddProduct = view.findViewById(R.id.btn_add_product);
         deleteAllProd = view.findViewById(R.id.delete_all_prod);
-
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
         DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
@@ -156,9 +156,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError error) {}
         });
-
-
-
 
         btnAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,50 +213,6 @@ public class HomeFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 //Save to Storage
                 saveImageToFirebase(imageUri);
-
-
-                // Retrieve the entered form data
-                String pname = prodname.getText().toString();
-                String pprice = prodprice.getText().toString();
-                String pdesc = proddesc.getText().toString();
-
-
-
-
-                String imgPath = String.valueOf(imageUri);
-                FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                StorageReference storageRef = mStorage.getReference().child(imgPath);
-
-                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-
-                        String pURL = String.valueOf(uri);
-
-                            /*Products prods = new Products(childKey, prod_name, prod_price, prod_desc, pURL,branchid);
-                            productlist.add(prods);
-                            adapter.notifyDataSetChanged();*/
-
-                        DatabaseReference newChildRef = databaseReference.push();
-                        String childKey = newChildRef.getKey();
-                        // Create a data object or HashMap to hold the form data
-                        Map<String, Object> formData = new HashMap<>();
-                        formData.put("productid", childKey);
-                        formData.put("productname", pname);
-                        formData.put("productprice", pprice);
-                        formData.put("productdesc", pdesc);
-                        formData.put("productimage", pURL);
-
-                        // Save the form data to Firebase Realtime Database
-                        newChildRef.setValue(formData);
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-
-                    }
-                });
             }
         });
 
@@ -342,20 +295,20 @@ public class HomeFragment extends Fragment {
     public void deleteAllProducts(){
         DatabaseReference prodReference = FirebaseDatabase.getInstance().getReference().child("products");
         prodReference.removeValue()
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // Deletion successful
-                    Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Handle any errors
-                    Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
-                }
-            });
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Deletion successful
+                        Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors
+                        Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void deleteAllPrompt() {
@@ -381,8 +334,8 @@ public class HomeFragment extends Fragment {
 
     private void saveImageToFirebase(Uri imageUri) {
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageRef.child(String.valueOf(imageUri));
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("images");
+        StorageReference imageRef = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(String.valueOf(imageUri)));
         UploadTask uploadTask = imageRef.putFile(imageUri);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -395,6 +348,23 @@ public class HomeFragment extends Fragment {
                         // Handle the success case, you can use the uri to retrieve the uploaded image URL
                         String imageUrl = uri.toString();
                         // Do something with the image URL
+
+                        String pname = prodname.getText().toString();
+                        String pprice = prodprice.getText().toString();
+                        String pdesc = proddesc.getText().toString();
+
+                        DatabaseReference newChildRef = databaseReference.push();
+                        String childKey = newChildRef.getKey();
+                        // Create a data object or HashMap to hold the form data
+                        Map<String, Object> formData = new HashMap<>();
+                        formData.put("productid", childKey);
+                        formData.put("productname", pname);
+                        formData.put("productprice", pprice);
+                        formData.put("productdesc", pdesc);
+                        formData.put("productimage", imageUrl);
+
+                        // Save the form data to Firebase Realtime Database
+                        newChildRef.setValue(formData);
                     }
                 });
             }
@@ -404,8 +374,6 @@ public class HomeFragment extends Fragment {
                 // Handle any errors that occurred while uploading the image
             }
         });
-
-
     }
 
     //template of alert dialog

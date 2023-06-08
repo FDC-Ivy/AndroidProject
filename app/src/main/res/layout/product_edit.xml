@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/txt"
-            android:text="Branch Price" />
+            android:text="Product Price" />
 
         <EditText
             android:id="@+id/product_edit_price"
