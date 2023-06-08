@@ -58,7 +58,7 @@ import java.util.Map;
 
 public class UserFragment extends Fragment {
 
-    private Button btnLogout, btnTransactionHist, uploadImage;
+    private Button btnLogout, btnTransactionHist, uploadImage, openURLbtn;
     private TextView editProfile, fullname, useremail;
     Context context = getContext();
     private SharedPreferences sharedPreferences;
@@ -157,7 +157,22 @@ public class UserFragment extends Fragment {
             }
         });
 
+        openURLbtn = view.findViewById(R.id.openURLbutton);
+        openURLbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openUrl();
+            }
+        });
+
         return view;
+    }
+
+    private void openUrl() {
+        String url = "https://www.jollibee.com.ph/"; // Replace with your desired URL scheme
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
     }
 
     private void openFile() {
@@ -327,6 +342,7 @@ public class UserFragment extends Fragment {
 
                 Picasso.get().load(imageURL).into(userImage);
                 userImage.setVisibility(View.VISIBLE);
+
             }
 
             @Override

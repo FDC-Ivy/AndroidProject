@@ -323,7 +323,7 @@ public class CartFragment extends Fragment {
 
     private void processPayment(){
         amount = String.valueOf(mtotalPrice);
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD",
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "PHP",
                 "Donate chuchuchu", PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(context, PaymentActivity.class);

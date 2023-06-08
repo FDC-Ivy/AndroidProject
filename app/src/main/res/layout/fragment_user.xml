@@ -65,8 +65,15 @@
             android:layout_height="100dp"/>
 
         <Button
+            android:id="@+id/openURLbutton"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Try to click me!"/>
+
+        <Button
             android:id="@+id/btn_transaction"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_below="@id/btn_logout"
@@ -75,7 +82,7 @@
 
         <Button
             android:id="@+id/btn_logout"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/jollibeered"

@@ -83,6 +83,7 @@
             app:startIconDrawable="@drawable/baseline_email_24"
             android:textColorHint="@color/dark_gray"
             app:startIconTint="@color/dark_gray"
+            android:visibility="gone"
             android:layout_marginBottom="27dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -102,6 +103,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/jollibeered"
             android:paddingBottom="10dp"
+            android:visibility="gone"
             android:text="*If you wish to change your password, just enter new password below."/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -113,6 +115,7 @@
             app:startIconTint="@color/dark_gray"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/dark_gray"
+            android:visibility="gone"
             android:layout_marginBottom="36dp">
 
             <com.google.android.material.textfield.TextInputEditText
