@@ -16,6 +16,8 @@ import com.example.androidproject.LoadingBar.LoadingBar;
 import com.example.androidproject.R;
 import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +31,7 @@ public class CustomerHome extends AppCompatActivity {
     ViewPager2 viewPager2;
     MyViewPagerAdapter myViewPagerAdapter;
     private SharedPreferences sharedPreferences;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,16 @@ public class CustomerHome extends AppCompatActivity {
         setContentView(R.layout.activity_customer_home);
 
         /*userid = findViewById(R.id.textView3);*/
+        FirebaseUser user = auth.getCurrentUser();
+        String login_user_id_auth = user.getUid();
+
+        sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_id_prefs", user.getUid());
+        editor.putBoolean("isLoggedIn", true);
+        editor.apply();
+
+
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -45,16 +58,13 @@ public class CustomerHome extends AppCompatActivity {
             /*userid.setText("this is customer home, your id is: "+data);*/
         }
 
-
-
-        final LoadingBar loadingBar = new LoadingBar(CustomerHome.this);
+        //final LoadingBar loadingBar = new LoadingBar(CustomerHome.this);
 
         //if user is already logged in
         sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String loginuserid = sharedPreferences.getString("user_id_prefs","");
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
         if(isLoggedIn){
-
             Bundle bundle2 = new Bundle();
             bundle2.putString("user_id", sharedPreferences.getString("user_id_prefs", ""));
             SignInSingleton.getInstance().setAuthUserId(loginuserid);
@@ -63,6 +73,7 @@ public class CustomerHome extends AppCompatActivity {
 
             Intent intent = new Intent(CustomerHome.this, Login.class);
             startActivity(intent);
+            finish();
             return;
 
         }
@@ -111,7 +122,18 @@ public class CustomerHome extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Perform any actions or cleanup before exiting the activity
-                CustomerHome.super.onBackPressed(); // Call the superclass method to allow the back action
+                 // Call the superclass method to allow the back action
+                CustomerHome.super.onBackPressed();
+
+                /*boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+                if (isLoggedIn) {
+                    // Navigate to the desired activity
+                    Intent intent = new Intent(CustomerHome.this, Login.class);
+                    startActivity(intent);
+                    finish(); // Finish the current activity to remove it from the back stack
+                } else {
+                     // Perform the default back button behavior
+                }*/
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

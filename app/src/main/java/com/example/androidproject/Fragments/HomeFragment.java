@@ -242,41 +242,8 @@ public class HomeFragment extends Fragment {
                     String prod_branchid = childSnapshot.child("productbranchid").getValue(String.class);
                     String pImage = childSnapshot.child("productimage").getValue(String.class);
 
-
-
-
-
-                    /*String imgPath = pImage;
-                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                    StorageReference storageRef = mStorage.getReference().child(imgPath);
-
-                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-
-                            String pURL = String.valueOf(uri);
-
-                            *//*Products prods = new Products(childKey, prod_name, prod_price, prod_desc, pURL,branchid);
-                            productlist.add(prods);
-                            adapter.notifyDataSetChanged();*//*
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-
-                        }
-                    });*/
-
-                    /*prodRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    prodRecyclerView.setAdapter(new ProductRecyclerViewAdapter(context, productlist));*/
-
-
                     Products prods = new Products(childKey, prod_name, prod_price, prod_desc, pImage,branchid);
                     productlist.add(prods);
-
-                    //Products prods = new Products(childKey, prod_name, prod_price, prod_desc, R.drawable.pxfuel, branchid);
-                    /*Products prods = new Products(childKey, prod_name, prod_price, prod_desc,  "https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/content%3A%2Fmedia%2Fexternal_primary%2Fimages%2Fmedia%2F1000001118?alt=media&token=40923164-4745-4412-b870-eb1206fb9689&_gl=1*h64lj8*_ga*MjA4NzUzNDYzNS4xNjg0OTMxMzcy*_ga_CW55HF8NVT*MTY4NjExNDM5OC40Ni4wLjE2ODYxMTQzOTguMC4wLjA.",branchid);
-                    productlist.add(prods);*/
 
                 }
 

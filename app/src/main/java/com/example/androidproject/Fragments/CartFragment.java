@@ -60,7 +60,7 @@ public class CartFragment extends Fragment {
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
     private Context context;
-    private Button deleteAllBtn, proceedPaymentBtn;
+    private TextView deleteAllBtn, proceedPaymentBtn, noCartLbl;
     private CartRecyclerviewAdapter adapter;
     private TextView totaltxt;
     private double mtotalPrice = 0.00;
@@ -86,6 +86,7 @@ public class CartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view_cart);
+        noCartLbl = view.findViewById(R.id.no_cart_label);
 
         //Start Paypal Service
         Intent intent = new Intent(context, PayPalService.class);
@@ -191,12 +192,13 @@ public class CartFragment extends Fragment {
                                     //mtotalPrice = mtotalPrice + (Double.parseDouble(cart_qty) * Double.parseDouble(productPrice));
                                     double totalPrice = Double.parseDouble(cart_qty) * Double.parseDouble(productPrice);
                                     mtotalPrice += totalPrice;
+
+                                    deleteAllBtn.setVisibility(View.VISIBLE);
                                 }
 
                                 DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
                                 String formattedTotalPrice = decimalFormat.format(mtotalPrice);
                                 totaltxt.setText("Total: P"+String.valueOf(formattedTotalPrice));
-
                             }
 
                             @Override
@@ -213,9 +215,11 @@ public class CartFragment extends Fragment {
                     recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
                 }
 
+                if (!dataSnapshot.exists()){
+                    deleteAllBtn.setVisibility(View.GONE);
+                    noCartLbl.setVisibility(View.VISIBLE);
+                }
             }
-
-
 
             @Override
             public void onCancelled(DatabaseError error) {
@@ -271,54 +275,12 @@ public class CartFragment extends Fragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Step 1: Retrieve data from "carts" table
-                /*DatabaseReference cartsRef = FirebaseDatabase.getInstance().getReference().child("carts");
-                cartsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot cartSnapshot : dataSnapshot.getChildren()) {
-                            // Step 2: Create a new transaction object
-                            String cartid = cartSnapshot.child("cartid").getValue(String.class);
-                            String userId = cartSnapshot.child("cartuserid").getValue(String.class);
-                            String productId = cartSnapshot.child("cartproductid").getValue(String.class);
-                            String quantity = cartSnapshot.child("cartqty").getValue(String.class);
-
-                            // Step 3: Store the transaction object in "transactions" table
-                            DatabaseReference transactionsRef = FirebaseDatabase.getInstance().getReference().child("transactions");
-                            String transactionId = transactionsRef.push().getKey();
-
-                            //getting the timestamp
-                            long currentTimestamp = System.currentTimeMillis();
-                            Date currentDate = new Date(currentTimestamp);
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
-                            String formattedDate = dateFormat.format(currentDate);
-                            double total = mtotalPrice;
-                            TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, String.valueOf(mtotalPrice), String.valueOf(formattedDate));
-                            transactionsRef.child(transactionId).setValue(transaction);
-
-                            // Step 4: Remove the cart item from "carts" table
-                            deleteAllCarts();
-
-                        }
-                        totaltxt.setText("Total: P0.00");
-                        mtotalPrice = 0.00;
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle any errors
-                    }
-                });*/
-
                 processPayment();
-
             }
         });
         builder.setNegativeButton("Cancel", null);
         AlertDialog dialog = builder.create();
         dialog.show();
-
-
     }
 
     private void processPayment(){

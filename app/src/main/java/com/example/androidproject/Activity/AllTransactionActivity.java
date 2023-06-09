@@ -10,7 +10,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidproject.Adapter.AllTransactionAdapter;
@@ -42,7 +45,6 @@ public class AllTransactionActivity extends AppCompatActivity {
     private AllTransactionAdapter adapter;
     List<String> mergedProductNames = new ArrayList<>();
     String mtransactionId = "test";
-
     int processedTransactions = 0;
 
     @Override
@@ -67,15 +69,14 @@ public class AllTransactionActivity extends AppCompatActivity {
             }
         });
 
-
-        /*List<TransactionHistory> items = new ArrayList<TransactionHistory>();
-        items.add(new TransactionHistory("John wick","john.wick@email.com","John wick","John wick","John wick"));
-        items.add(new TransactionHistory("John wick","john.wick@email.com","John wick","John wick","John wick"));
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new AllTransactionAdapter(getApplicationContext(),items));*/
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
-
 
     public void displayTransaction(){
 
@@ -85,174 +86,163 @@ public class AllTransactionActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                for (DataSnapshot transactionSnapshot : dataSnapshot.getChildren()) {
 
+                        //Getting other data
+                        HashMap<String, List<TransactionHistory>> transactionMap = new HashMap<>();
+                        List<TransactionHistory> transactionList = new ArrayList<>();
 
-                //Getting other data
-                HashMap<String, List<TransactionHistory>> transactionMap = new HashMap<>();
-                List<TransactionHistory> transactionList = new ArrayList<>();
+                        HashMap<String, List<String>> transactionProductMap = new HashMap<>();
+                        int totalTransactions = (int) dataSnapshot.getChildrenCount();
+                        HashSet<String> uniqueTransactionIds = new HashSet<>();
 
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Retrieve the data for each transaction
+                            String transactionId = snapshot.child("transactionId").getValue(String.class);
+                            String transactionProdId = snapshot.child("transactionProductId").getValue(String.class);
 
+                            DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference().child("products").child(transactionProdId);
+                            productsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        String productName = dataSnapshot.child("productname").getValue(String.class);
 
+                                        if (transactionProductMap.containsKey(transactionId)) {
+                                            // Add the productname to the existing list associated with the transactionId
+                                            List<String> productList = transactionProductMap.get(transactionId);
+                                            productList.add(productName);
+                                        } else {
+                                            // Create a new list for the transactionId and add the productname
+                                            List<String> productList = new ArrayList<>();
+                                            productList.add(productName);
+                                            transactionProductMap.put(transactionId, productList);
+                                        }
+                                    }
 
-                HashMap<String, List<String>> transactionProductMap = new HashMap<>();
-                int totalTransactions = (int) dataSnapshot.getChildrenCount();
-                HashSet<String> uniqueTransactionIds = new HashSet<>();
+                                    // Increment the counter for processed transactions
+                                    processedTransactions++;
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Retrieve the data for each transaction
-                    String transactionId = snapshot.child("transactionId").getValue(String.class);
-                    String transactionProdId = snapshot.child("transactionProductId").getValue(String.class);
+                                    // Check if all transactions have been processed
+                                    if (processedTransactions == totalTransactions) {
+                                        // All transactions have been processed, perform further operations
+                                        List<String> mergedProductNames = new ArrayList<>();
+                                        for (Map.Entry<String, List<String>> entry : transactionProductMap.entrySet()) {
+                                            String transactionId = entry.getKey();
+                                            List<String> productList = entry.getValue();
+                                            String mergedProductName = TextUtils.join(", ", productList);
+                                            mergedProductNames.add(mergedProductName);
 
-                    DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference().child("products").child(transactionProdId);
-                    productsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                String productName = dataSnapshot.child("productname").getValue(String.class);
+                                            //Toast.makeText(AllTransactionActivity.this, mergedProductName, Toast.LENGTH_SHORT).show();
 
-                                if (transactionProductMap.containsKey(transactionId)) {
-                                    // Add the productname to the existing list associated with the transactionId
-                                    List<String> productList = transactionProductMap.get(transactionId);
-                                    productList.add(productName);
-                                } else {
-                                    // Create a new list for the transactionId and add the productname
-                                    List<String> productList = new ArrayList<>();
-                                    productList.add(productName);
-                                    transactionProductMap.put(transactionId, productList);
+                                            //Saving to database
+                                            DatabaseReference mergedProductNamesRef = FirebaseDatabase.getInstance().getReference().child("mergedproductnames");
+                                            mergedProductNamesRef.child(transactionId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (!dataSnapshot.exists()) {
+                                                        // TransactionId does not exist, save the transactionId and mergedProductName
+                                                        DatabaseReference newChildRef = mergedProductNamesRef.child(transactionId);
+                                                        newChildRef.child("mergedtransactionid").setValue(transactionId);
+                                                        newChildRef.child("mergedproductname").setValue(mergedProductName);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    // Handle any errors
+                                                }
+                                            });
+                                        }
+                                    }
                                 }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // Handle any errors
+                                }
+                            });
+
+                            uniqueTransactionIds.add(transactionId);
+                        }
+
+                        TransactionHistory transaction = null;
+                        transactionlist = new ArrayList<TransactionHistory>();
+                        HashSet<String> uniqueTransactionIds2 = new HashSet<>();
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            // Retrieve the data for each transaction
+                            mtransactionId = snapshot.child("transactionId").getValue(String.class);
+                            String idid = mtransactionId;
+                            String tranUserID = snapshot.child("transactionUserId").getValue(String.class);
+                            String transactionTotal = snapshot.child("transactionTotal").getValue(String.class);
+                            double total = Double.parseDouble(transactionTotal);
+                            String transactionDate = snapshot.child("transactionTimeStamp").getValue(String.class);
+
+                            DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+                            String formattedTotalPrice = decimalFormat.format(total);
+
+
+                            if (uniqueTransactionIds2.contains(mtransactionId)) {
+                                continue; // Skip the duplicate transactionId
                             }
 
-                            // Increment the counter for processed transactions
-                            processedTransactions++;
+                            uniqueTransactionIds2.add(mtransactionId);
 
-                            // Check if all transactions have been processed
-                            if (processedTransactions == totalTransactions) {
-                                // All transactions have been processed, perform further operations
-                                List<String> mergedProductNames = new ArrayList<>();
-                                for (Map.Entry<String, List<String>> entry : transactionProductMap.entrySet()) {
-                                    String transactionId = entry.getKey();
-                                    List<String> productList = entry.getValue();
-                                    String mergedProductName = TextUtils.join(", ", productList);
-                                    mergedProductNames.add(mergedProductName);
+                            List<TransactionHistory> transactionList2;
+                            if (transactionMap.containsKey(mtransactionId)) {
+                                // Get the existing list associated with the transaction ID
+                                transactionList2 = transactionMap.get(mtransactionId);
+                            } else {
+                                // Create a new list for the transaction ID
+                                transactionList2 = new ArrayList<>();
+                                transactionMap.put(mtransactionId, transactionList2);
+                            }
 
-                                    //Toast.makeText(AllTransactionActivity.this, mergedProductName, Toast.LENGTH_SHORT).show();
 
-                                    //Saving to database
-                                    DatabaseReference mergedProductNamesRef = FirebaseDatabase.getInstance().getReference().child("mergedproductnames");
-                                    mergedProductNamesRef.child(transactionId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (!dataSnapshot.exists()) {
-                                                // TransactionId does not exist, save the transactionId and mergedProductName
-                                                DatabaseReference newChildRef = mergedProductNamesRef.child(transactionId);
-                                                newChildRef.child("mergedtransactionid").setValue(transactionId);
-                                                newChildRef.child("mergedproductname").setValue(mergedProductName);
-                                            }
+                            DatabaseReference mergedProductNamesRef = FirebaseDatabase.getInstance().getReference().child("mergedproductnames");
+                            mergedProductNamesRef.child(mtransactionId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot mergedProductNamesSnapshot) {
+                                    if (mergedProductNamesSnapshot.exists()) {
+                                        String mergedProductName = mergedProductNamesSnapshot.child("mergedproductname").getValue(String.class);
+
+                                        if(tranUserID.equals(SignInSingleton.getInstance().getAuthUserId())) {
+                                            TransactionHistory transactions = new TransactionHistory("Transaction #: " + idid, mergedProductName, "Total: P" + formattedTotalPrice, transactionDate);
+                                            transactionlist.add(transactions);
+                                            TextView no_label = findViewById(R.id.no_transaction_history);
+                                            no_label.setVisibility(View.GONE);
+                                        }else{
+                                            TextView no_label = findViewById(R.id.no_transaction_history);
+                                            no_label.setVisibility(View.VISIBLE);
+                                            no_label.setText("No Transaction History");
                                         }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                            // Handle any errors
-                                        }
-                                    });
+                                    }
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(AllTransactionActivity.this));
+                                    recyclerView.setAdapter(new AllTransactionAdapter(getApplicationContext(), transactionlist));
                                 }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // Handle any errors
+                                }
+                            });
+                        }
+
+                        // Display the grouped data
+                        for (String transactionId : transactionMap.keySet()) {
+                            transactionList = transactionMap.get(transactionId);
+                            System.out.println("Transaction ID: " + transactionId);
+                            for (TransactionHistory transaction1 : transactionList) {
+                                // Display the details of each transaction
+                                System.out.println("Transaction Name: " + transaction1.getTransactionId());
+                                // ... Display other fields as needed
                             }
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            // Handle any errors
-                        }
-                    });
 
-                    uniqueTransactionIds.add(transactionId);
-                }
-
-
-
-
-
-                TransactionHistory transaction = null;
-                transactionlist = new ArrayList<TransactionHistory>();
-                HashSet<String> uniqueTransactionIds2 = new HashSet<>();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Retrieve the data for each transaction
-                    mtransactionId = snapshot.child("transactionId").getValue(String.class);
-                    String idid = mtransactionId;
-                    String transactionTotal = snapshot.child("transactionTotal").getValue(String.class);
-                    double total = Double.parseDouble(transactionTotal);
-                    String transactionDate = snapshot.child("transactionTimeStamp").getValue(String.class);
-
-                    DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-                    String formattedTotalPrice = decimalFormat.format(total);
-
-
-                    if (uniqueTransactionIds2.contains(mtransactionId)) {
-                        continue; // Skip the duplicate transactionId
-                    }
-
-                    uniqueTransactionIds2.add(mtransactionId);
-
-
-                    List<TransactionHistory> transactionList2;
-                    if (transactionMap.containsKey(mtransactionId)) {
-                        // Get the existing list associated with the transaction ID
-                        transactionList2 = transactionMap.get(mtransactionId);
-                    } else {
-                        // Create a new list for the transaction ID
-                        transactionList2 = new ArrayList<>();
-                        transactionMap.put(mtransactionId, transactionList2);
-                    }
-
-
-                    DatabaseReference mergedProductNamesRef = FirebaseDatabase.getInstance().getReference().child("mergedproductnames");
-                    mergedProductNamesRef.child(mtransactionId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot mergedProductNamesSnapshot) {
-                            if (mergedProductNamesSnapshot.exists()) {
-                                String mergedProductName = mergedProductNamesSnapshot.child("mergedproductname").getValue(String.class);
-
-                                TransactionHistory transactions = new TransactionHistory("Transaction #: "+idid, mergedProductName, "Total: P"+formattedTotalPrice, transactionDate);
-                                transactionlist.add(transactions);
-                            }
-                            recyclerView.setLayoutManager(new LinearLayoutManager(AllTransactionActivity.this));
-                            recyclerView.setAdapter(new AllTransactionAdapter(getApplicationContext(), transactionlist));
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            // Handle any errors
-                        }
-                    });
-
-
-                    /*TransactionHistory transactions = new TransactionHistory("Transaction #: "+mtransactionId, "mergedProductName", "Total: P"+formattedTotalPrice, transactionDate);
-                    transactionlist.add(transactions);*/
-
-
-                    /*TransactionHistory transactions = new TransactionHistory(mtransactionId, "aa", "cart_qty", "price", "transactionDate");
-                    transactionlist.add(transactions);*/
-
-
-                }
-
-                /*recyclerView.setLayoutManager(new LinearLayoutManager(AllTransactionActivity.this));
-                recyclerView.setAdapter(new AllTransactionAdapter(getApplicationContext(), transactionlist));*/
-
-
-
-
-
-
-                // Display the grouped data
-                for (String transactionId : transactionMap.keySet()) {
-                    transactionList = transactionMap.get(transactionId);
-                    System.out.println("Transaction ID: " + transactionId);
-                    for (TransactionHistory transaction1 : transactionList) {
-                        // Display the details of each transaction
-                        System.out.println("Transaction Name: " + transaction1.getTransactionId());
-                        // ... Display other fields as needed
-                    }
+                    break;
                 }
             }
 
@@ -261,7 +251,5 @@ public class AllTransactionActivity extends AppCompatActivity {
                 // Handle any errors
             }
         });
-
     }
-
 }

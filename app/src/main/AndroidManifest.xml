@@ -19,9 +19,6 @@
         android:theme="@style/Theme.AndroidProject"
         tools:targetApi="31">
         <activity
-            android:name=".Paypal.PaypalActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activity.AllTransactionActivity"
             android:exported="false" />
         <activity

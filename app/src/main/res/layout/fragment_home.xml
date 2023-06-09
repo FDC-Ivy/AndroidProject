@@ -10,22 +10,28 @@
     tools:context=".Fragments.HomeFragment">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/delete_all_prod"
         android:text="Delete All"
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="end"
         android:visibility="gone"
-        android:gravity="right"
-        android:textColor="@color/purple_700"
-        android:textSize="16dp"/>
+        android:textColor="@color/jollibeered"
+        android:textSize="16dp"
+        android:drawableEnd="@drawable/baseline_delete_24"
+        android:drawableTint="@color/jollibeered"/>
 
     <Button
         android:id="@+id/btn_add_product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
         android:visibility="gone"
         android:layout_below="@id/delete_all_prod"
-        android:text="Add Product" />
+        android:text="+ Add Product" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

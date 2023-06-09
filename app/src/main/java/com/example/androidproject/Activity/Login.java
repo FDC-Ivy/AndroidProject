@@ -54,17 +54,6 @@ public class Login extends AppCompatActivity {
 
             sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
-            /*mbtnLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loadingBar.startLoadingDialog();
-                    SignIn signIn = new SignIn();
-                    signIn.signInWithEmailAndPassword(mtxtEmail.getText().toString(), mtxtPassword.getText().toString(), Login.this, sharedPreferences);
-                    loadingBar.dismissDialog();
-                    //finish();
-                }
-            });*/
-
         mbtnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +76,6 @@ public class Login extends AppCompatActivity {
                         // Validation passed, proceed with sign-in
                         SignIn signIn = new SignIn();
                         signIn.signInWithEmailAndPassword(email, password, Login.this, sharedPreferences);
-                        //finish();
                     }
                 }
             }
@@ -101,6 +89,8 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+
+
     }
 
     private boolean isValidEmail(String email) {

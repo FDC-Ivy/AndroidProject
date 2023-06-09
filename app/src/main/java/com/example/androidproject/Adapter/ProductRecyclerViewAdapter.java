@@ -258,7 +258,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
     //update product
     private void productEditDialog(String prodid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Products");
 
         // Inflate the form layout XML file
         View formView = LayoutInflater.from(context).inflate(R.layout.product_edit, null);

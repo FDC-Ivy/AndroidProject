@@ -11,13 +11,18 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:id="@+id/delete_all_cart_btn"
         android:text="Remove All"
-        android:id="@+id/delete_all_cart_btn"/>
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="end"
+        android:textColor="@color/jollibeered"
+        android:textSize="16dp"
+        android:drawableEnd="@drawable/baseline_delete_24"
+        android:drawableTint="@color/jollibeered"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
@@ -33,6 +38,13 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/no_cart_label"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="Cart is Empty" />
 
     <LinearLayout
         android:id="@+id/button_layout"
@@ -41,17 +53,26 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/recycler_view_cart"
             android:id="@+id/total_price"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
             android:textColor="@color/black"
-            android:text="Total" />
+            android:text="Total: P0.00" />
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:layout_margin="10dp"
             android:text="Pay Now"
             android:id="@+id/payment_btn"
             android:layout_gravity="center_horizontal" />

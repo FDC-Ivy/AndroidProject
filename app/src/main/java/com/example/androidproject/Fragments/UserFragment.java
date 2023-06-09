@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -27,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +71,7 @@ public class UserFragment extends Fragment {
     private DatabaseReference databaseReference;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -115,6 +118,15 @@ public class UserFragment extends Fragment {
         useremail = view.findViewById(R.id.user_email);
 
         displayUserData();
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                displayUserData();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         Button uploadImageBtn = view.findViewById(R.id.upload_image);
         uploadImageBtn.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +142,7 @@ public class UserFragment extends Fragment {
 
                 // Clear the relevant shared preferences
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("user_id_prefs");
                 editor.remove("isLoggedIn");
                 editor.apply();
 
@@ -201,20 +214,20 @@ public class UserFragment extends Fragment {
 
                         // Update the form data in Firebase Realtime Database
                         databaseReference.updateChildren(updateData)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // Data update successful
-                                        //Toast.makeText(context, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        // Handle update failure
-                                        //Toast.makeText(context, "Failed to update profile.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Data update successful
+                                    //Toast.makeText(context, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle update failure
+                                    //Toast.makeText(context, "Failed to update profile.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     }
                 });
             }
@@ -319,7 +332,6 @@ public class UserFragment extends Fragment {
                             });
                 }
 
-
             }
         });
 
@@ -340,9 +352,14 @@ public class UserFragment extends Fragment {
                 fullname.setText(f_name+ " " +l_name);
                 useremail.setText(u_email.toString());
 
-                Picasso.get().load(imageURL).into(userImage);
-                userImage.setVisibility(View.VISIBLE);
-
+                if(imageURL.equals("")){
+                    String link = "https://i.pinimg.com/564x/d0/06/af/d006af4e980707901a55c3c0f29f0dd9.jpg";
+                    Picasso.get().load(link).into(userImage);
+                    userImage.setVisibility(View.VISIBLE);
+                }else{
+                    Picasso.get().load(imageURL).into(userImage);
+                    userImage.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -360,7 +377,19 @@ public class UserFragment extends Fragment {
                 Toast.makeText(context, "Photo changed successfully.", Toast.LENGTH_SHORT).show();
             }
         });
-        builder.setNegativeButton("NO", null);
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+
+                        displayUserData();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }

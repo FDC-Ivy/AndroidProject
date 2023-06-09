@@ -1,5 +1,6 @@
 package com.example.androidproject.Auth;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,8 +28,6 @@ public class SignUp {
                         if (user != null) {
                             String userId = user.getUid();
                             saveUserNameToDatabase(userId, fname, lname, email, usertype);
-                            // Perform additional actions here, such as updating user profile
-                            // or redirecting the user to another activity
 
                             Bundle bundle = new Bundle();
                             bundle.putString("user_id", userId);
@@ -36,6 +35,7 @@ public class SignUp {
                             Intent intent = new Intent(context, CustomerHome.class);
                             intent.putExtras(bundle);
                             context.startActivity(intent);
+                            ((Activity) context).finish();
                         }
                     } else {
                         // Handle any errors that occur during user creation
@@ -44,7 +44,7 @@ public class SignUp {
                             String errorCode = exception.getErrorCode();
                             String errorMessage = exception.getMessage();
                             // Handle specific error codes or display a generic error message
-                            Toast.makeText(context, "errorMessage", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Email exists.", Toast.LENGTH_SHORT).show();
 
                         }
                     }
