@@ -8,22 +8,52 @@
     android:background="@drawable/testbackground"
     android:layout_margin="10dp"
     android:focusable="true"
-    android:id="@+id/branch_button"
+    android:id="@+id/transactionview_button"
     android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linear_transaction"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/transaction_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:paddingRight="50dp"
+            android:textSize="15dp"
+            tools:text="Transaction Id" />
+
+        <TextView
+            android:id="@+id/queue_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="@+id/transaction_id"
+            android:textSize="15dp"
+            tools:text="Queue" />
+
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/transaction_id"
-        android:textColor="@color/black"
-        android:paddingRight="50dp"
+        android:id="@+id/customer_name_txt"
+        android:layout_below="@id/linear_transaction"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:paddingLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp"
+        android:background="@color/jollibeered"
         android:textSize="15dp"
-        tools:text="Transaction Id"/>
+        tools:text="Customer Name"/>
 
     <TextView
         android:id="@+id/transaction_date"
         android:layout_width="wrap_content"
-        android:layout_below="@id/transaction_id"
+        android:layout_below="@id/customer_name_txt"
         android:layout_height="wrap_content"
         android:paddingRight="50dp"
         android:textColor="@color/black"
@@ -34,9 +64,9 @@
         android:id="@+id/transaction_total"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_below="@id/customer_name_txt"
+        android:layout_marginStart="5dp"
         android:layout_toEndOf="@id/transaction_date"
-        android:layout_below="@id/transaction_id"
         android:textColor="@color/black"
         android:textSize="20dp"
         tools:text="Total" />

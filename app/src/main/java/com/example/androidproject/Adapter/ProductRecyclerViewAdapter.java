@@ -66,15 +66,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
         Products product = items.get(position);
         holder.bind(product);
 
-        //String imageUrl = "https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/images%2Fimage.jpg?alt=media&token=https://firebasestorage.googleapis.com/v0/b/project1-4a559.appspot.com/o/content%3A%2Fmedia%2Fexternal_primary%2Fimages%2Fmedia%2F1000001118?alt=media&token=40923164-4745-4412-b870-eb1206fb9689";
-        //Picasso.get().load(items.get(position).getmProductImage()).into(holder.productImg);
-
-
-
-
-
-
-
         final Products data = items.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

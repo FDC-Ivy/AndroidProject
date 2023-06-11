@@ -194,6 +194,7 @@ public class CartFragment extends Fragment {
                                     mtotalPrice += totalPrice;
 
                                     deleteAllBtn.setVisibility(View.VISIBLE);
+                                    //noCartLbl.setVisibility(View.GONE);
                                 }
 
                                 DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
@@ -271,7 +272,7 @@ public class CartFragment extends Fragment {
         builder.setTitle("Great!");
         DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
         String formattedTotalPrice = decimalFormat.format(mtotalPrice);
-        builder.setMessage("You are about to pay " +formattedTotalPrice+ " amount for this order. Would you like to proceed?");
+        builder.setMessage("You are about to pay P" +formattedTotalPrice+ " amount for this order. Would you like to proceed?");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -286,7 +287,7 @@ public class CartFragment extends Fragment {
     private void processPayment(){
         amount = String.valueOf(mtotalPrice);
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "PHP",
-                "Donate chuchuchu", PayPalPayment.PAYMENT_INTENT_SALE);
+                "Payment for Jollibee Order", PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(context, PaymentActivity.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -306,11 +307,6 @@ public class CartFragment extends Fragment {
                     try {
                         String paymentDetails = confirmation.toJSONObject().toString(4);
                         Log.i("paymentExample", paymentDetails);
-
-                        /*startActivity(new Intent(context, PaymentDetails.class)
-                                .putExtra("PaymentDetails", paymentDetails)
-                                .putExtra("PaymentAmount", amount)
-                        );*/
 
                         DatabaseReference cartsRef = FirebaseDatabase.getInstance().getReference().child("carts");
                         cartsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -333,12 +329,11 @@ public class CartFragment extends Fragment {
                                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                                     String formattedDate = dateFormat.format(currentDate);
                                     double total = mtotalPrice;
-                                    TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, String.valueOf(mtotalPrice), String.valueOf(formattedDate));
+                                    TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, quantity, String.valueOf(mtotalPrice), String.valueOf(formattedDate), true);
                                     transactionsRef.child(transactionId).setValue(transaction);
 
                                     // Step 4: Remove the cart item from "carts" table
                                     deleteAllCarts();
-
                                 }
                                 totaltxt.setText("Total: P0.00");
                                 mtotalPrice = 0.00;
@@ -355,7 +350,7 @@ public class CartFragment extends Fragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
+                        Log.e("error message", "an extremely unlikely failure occurred: ", e);
                     }
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {

@@ -11,8 +11,8 @@ import com.example.androidproject.R;
 
 public class AllTransactionViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView transactionDate, transactionTotal, transactionProdName, transactionProdQty, transactionPrice, transactionid;
-    public RelativeLayout cartClick;
+    public TextView transactionDate, transactionTotal, transactionProdName, transactionProdQty, transactionPrice, transactionid, fullname, queue;
+    public RelativeLayout transactionview;
 
     public AllTransactionViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -23,5 +23,8 @@ public class AllTransactionViewHolder extends RecyclerView.ViewHolder {
         transactionProdName = itemView.findViewById(R.id.transaction_product_name);
         transactionProdQty = itemView.findViewById(R.id.transaction_product_qty);
         transactionPrice = itemView.findViewById(R.id.transaction_product_price);
+        fullname = itemView.findViewById(R.id.customer_name_txt);
+        queue = itemView.findViewById(R.id.queue_txt);
+        transactionview = itemView.findViewById(R.id.transactionview_button);
     }
 }

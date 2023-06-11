@@ -56,8 +56,6 @@ public class ProductViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Products product) {
-        // Assuming 'product' contains the necessary information, including the image URL
-
         // Load image using Picasso
         Picasso.get().load(product.getmProductImage()).into(productImg);
     }

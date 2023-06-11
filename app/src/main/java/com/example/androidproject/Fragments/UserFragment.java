@@ -60,7 +60,7 @@ import java.util.Map;
 
 public class UserFragment extends Fragment {
 
-    private Button btnLogout, btnTransactionHist, uploadImage, openURLbtn;
+    private Button btnLogout, btnTransactionHist, uploadImage, openURLbtn, queueBtn, allTransactionHistBtn;
     private TextView editProfile, fullname, useremail;
     Context context = getContext();
     private SharedPreferences sharedPreferences;
@@ -177,6 +177,9 @@ public class UserFragment extends Fragment {
                 openUrl();
             }
         });
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
 
         return view;
     }
