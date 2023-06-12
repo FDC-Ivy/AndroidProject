@@ -23,10 +23,13 @@ import com.example.androidproject.Adapter.AllTransactionAdapter;
 import com.example.androidproject.Model.TransactionHistory;
 import com.example.androidproject.R;
 import com.example.androidproject.Singleton.SignInSingleton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
@@ -44,6 +47,8 @@ public class AllTransactionActivity extends AppCompatActivity {
     String mtransactionId = "test";
     int processedTransactions = 0;
     Context context;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    double mtotal = 0.00;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +77,9 @@ public class AllTransactionActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseUser user = auth.getCurrentUser();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
+        DatabaseReference userRef = usersRef.child(user.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,7 +103,7 @@ public class AllTransactionActivity extends AppCompatActivity {
             public void onRefresh() {
 
                 DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-                DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
+                DatabaseReference userRef = usersRef.child(user.getUid());
                 userRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -131,7 +137,8 @@ public class AllTransactionActivity extends AppCompatActivity {
 
         String products = "";
         DatabaseReference transactionsRef = FirebaseDatabase.getInstance().getReference().child("transactions");
-        transactionsRef.addValueEventListener(new ValueEventListener() {
+        Query queryTran = transactionsRef.orderByChild("notQueue");
+        queryTran.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -229,7 +236,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                             double total = Double.parseDouble(transactionTotal);
                             String transactionDate = snapshot.child("transactionTimeStamp").getValue(String.class);
                             String customerid = snapshot.child("transactionUserId").getValue(String.class);
-                            boolean queue = snapshot.child("onQueue").getValue(boolean.class);
+                            boolean queue = snapshot.child("notQueue").getValue(boolean.class);
 
                             DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
                             String formattedTotalPrice = decimalFormat.format(total);
@@ -257,7 +264,12 @@ public class AllTransactionActivity extends AppCompatActivity {
                                     if (mergedProductNamesSnapshot.exists()) {
                                         String mergedProductName = mergedProductNamesSnapshot.child("mergedproductname").getValue(String.class);
 
-                                        if(tranUserID.equals(SignInSingleton.getInstance().getAuthUserId())) {
+                                        FirebaseUser user = auth.getCurrentUser();
+                                        if(tranUserID.equals(user.getUid())) {
+                                            mtotal += total;
+                                            String formattedTotalPrice2 = decimalFormat.format(mtotal);
+                                            TextView grandtotal = findViewById(R.id.total_txt);
+                                            grandtotal.setText("All Order Total: P"+String.valueOf(formattedTotalPrice2));
                                             TransactionHistory transactions = new TransactionHistory(idid, customerid, mergedProductName, "Total: P" + formattedTotalPrice, transactionDate, queue);
                                             transactionlist.add(transactions);
                                         }
@@ -273,6 +285,8 @@ public class AllTransactionActivity extends AppCompatActivity {
                                 }
                             });
                         }
+
+                        mtotal = 0.00;
 
                         // Display the grouped data
                         for (String transactionId : transactionMap.keySet()) {
@@ -300,7 +314,8 @@ public class AllTransactionActivity extends AppCompatActivity {
     public void adminDisplayTransaction(){
         String products = "";
         DatabaseReference transactionsRef = FirebaseDatabase.getInstance().getReference().child("transactions");
-        transactionsRef.addValueEventListener(new ValueEventListener() {
+        Query queryTran = transactionsRef.orderByChild("notQueue");
+        queryTran.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -399,7 +414,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                         double total = Double.parseDouble(transactionTotal);
                         String transactionDate = snapshot.child("transactionTimeStamp").getValue(String.class);
                         String customerid = snapshot.child("transactionUserId").getValue(String.class);
-                        boolean queue = snapshot.child("onQueue").getValue(boolean.class);
+                        boolean queue = snapshot.child("notQueue").getValue(boolean.class);
 
                         DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
                         String formattedTotalPrice = decimalFormat.format(total);
@@ -427,6 +442,10 @@ public class AllTransactionActivity extends AppCompatActivity {
                                 if (mergedProductNamesSnapshot.exists()) {
                                     String mergedProductName = mergedProductNamesSnapshot.child("mergedproductname").getValue(String.class);
 
+                                        mtotal += total;
+                                        String formattedTotalPrice2 = decimalFormat.format(mtotal);
+                                        TextView grandtotal = findViewById(R.id.total_txt);
+                                        grandtotal.setText("All Order Total: P"+String.valueOf(formattedTotalPrice2));
                                         TransactionHistory transactions = new TransactionHistory(idid, customerid, mergedProductName, "Total: P" + formattedTotalPrice, transactionDate, queue);
                                         transactionlist.add(transactions);
 
@@ -441,6 +460,8 @@ public class AllTransactionActivity extends AppCompatActivity {
                             }
                         });
                     }
+
+                    mtotal = 0.00;
 
                     // Display the grouped data
                     for (String transactionId : transactionMap.keySet()) {

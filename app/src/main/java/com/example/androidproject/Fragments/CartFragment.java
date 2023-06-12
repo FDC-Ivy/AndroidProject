@@ -114,6 +114,7 @@ public class CartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 deleteAllPrompt();
+
             }
         });
 
@@ -130,28 +131,8 @@ public class CartFragment extends Fragment {
         return view;
     }
 
-    public void validation(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //arraylist
-                cartlist = new ArrayList<AddToCart>();
-                int childCount = (int) dataSnapshot.getChildrenCount();  // Track the number of child snapshots processed
-
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    String cart_user_id = childSnapshot.child("cartuserid").getValue(String.class);
-                    String id = SignInSingleton.getInstance().getAuthUserId();
-                    if(cart_user_id.equals(SignInSingleton.getInstance().getAuthUserId())){
-                        displayData();
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {}
-        });
-    }
-
     private void displayData() {
+
         String userId = SignInSingleton.getInstance().getAuthUserId();
         if (userId == null) {
             // Handle the case when the user ID is not available
@@ -238,7 +219,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         // Deletion successful
-                        Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -259,6 +240,7 @@ public class CartFragment extends Fragment {
                 deleteAllCarts();
                 totaltxt.setText("Total: P0.00");
                 mtotalPrice = 0.00;
+                Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -329,7 +311,7 @@ public class CartFragment extends Fragment {
                                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                                     String formattedDate = dateFormat.format(currentDate);
                                     double total = mtotalPrice;
-                                    TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, quantity, String.valueOf(mtotalPrice), String.valueOf(formattedDate), true);
+                                    TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, quantity, String.valueOf(mtotalPrice), String.valueOf(formattedDate), false);
                                     transactionsRef.child(transactionId).setValue(transaction);
 
                                     // Step 4: Remove the cart item from "carts" table
@@ -345,7 +327,7 @@ public class CartFragment extends Fragment {
                             }
                         });
 
-                        Toast.makeText(context, "Payment is successful.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Payment is successful. Please check your order history.", Toast.LENGTH_SHORT).show();
 
 
                     } catch (JSONException e) {

@@ -18,6 +18,7 @@ import com.example.androidproject.Auth.SignUp;
 import com.example.androidproject.Enum.UserType;
 import com.example.androidproject.Model.Customers;
 import com.example.androidproject.R;
+import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +39,8 @@ public class Registration extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         loadingBar = findViewById(R.id.loadingBar);
+
+        sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
         txtHyperlinkToLogin = findViewById(R.id.txtHyperlinkToLogin);
         txtFirstName = findViewById(R.id.txtFirstName);
@@ -82,7 +85,12 @@ public class Registration extends AppCompatActivity {
                     }
                 }
 
-
+                /*FirebaseUser user = auth.getCurrentUser();
+                sharedPreferences = getApplicationContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("user_id_prefs", user.getUid());
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();*/
             }
         });
 

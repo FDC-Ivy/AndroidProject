@@ -11,7 +11,7 @@ import com.example.androidproject.R;
 
 public class AllTransactionViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView transactionDate, transactionTotal, transactionProdName, transactionProdQty, transactionPrice, transactionid, fullname, queue;
+    public TextView transactionDate, transactionTotal, transactionProdName, transactionProdQty, transactionPrice, transactionid, fullname, queue, grandtotal;
     public RelativeLayout transactionview;
 
     public AllTransactionViewHolder(@NonNull View itemView) {
@@ -26,5 +26,6 @@ public class AllTransactionViewHolder extends RecyclerView.ViewHolder {
         fullname = itemView.findViewById(R.id.customer_name_txt);
         queue = itemView.findViewById(R.id.queue_txt);
         transactionview = itemView.findViewById(R.id.transactionview_button);
+        grandtotal = itemView.findViewById(R.id.total_txt);
     }
 }

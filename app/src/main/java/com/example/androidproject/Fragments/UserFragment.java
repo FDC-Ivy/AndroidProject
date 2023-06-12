@@ -72,6 +72,7 @@ public class UserFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -103,8 +104,9 @@ public class UserFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        FirebaseUser user = auth.getCurrentUser();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("users").child(SignInSingleton.getInstance().getAuthUserId());
+        databaseReference = firebaseDatabase.getReference("users").child(user.getUid());
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
@@ -141,9 +143,13 @@ public class UserFragment extends Fragment {
             public void onClick(View v) {
 
                 // Clear the relevant shared preferences
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                /*SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("user_id_prefs");
                 editor.remove("isLoggedIn");
+                editor.apply();*/
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("user_id_prefs", user.getUid());
+                editor.putBoolean("isLoggedIn", false);
                 editor.apply();
 
                 // Redirect to the login activity
@@ -383,13 +389,25 @@ public class UserFragment extends Fragment {
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
+                displayUserData();
 
-                        displayUserData();
-                        swipeRefreshLayout.setRefreshing(false);
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String dbimage = snapshot.child("userimage").getValue(String.class);
+
+                        if(dbimage.equals("")){
+                            String link = "https://i.pinimg.com/564x/d0/06/af/d006af4e980707901a55c3c0f29f0dd9.jpg";
+                            Picasso.get().load(link).into(userImage);
+                            userImage.setVisibility(View.VISIBLE);
+                        }else{
+                            Picasso.get().load(dbimage).into(userImage);
+                            userImage.setVisibility(View.VISIBLE);
+                        }
                     }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
             }
         });

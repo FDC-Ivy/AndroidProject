@@ -2,7 +2,9 @@ package com.example.androidproject.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -118,5 +120,40 @@ public class Login extends AppCompatActivity {
         }, 3000); // Delay for 3 seconds
     }
 
+    /*public void onBackPressed() {
+        // Add your custom code here
+        // For example, you can show a dialog asking for confirmation before allowing the back action
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmation");
+        builder.setMessage("Are you sure you want to exit?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Perform any actions or cleanup before exiting the activity
+                // Call the superclass method to allow the back action
+                CustomerHome.super.onBackPressed();
+
+                *//*boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+                if (isLoggedIn) {
+                    // Navigate to the desired activity
+                    Intent intent = new Intent(CustomerHome.this, Login.class);
+                    startActivity(intent);
+                    finish(); // Finish the current activity to remove it from the back stack
+                } else {
+                     // Perform the default back button behavior
+                }*//*
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Dismiss the dialog and do nothing, allowing the user to stay in the activity
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }*/
 }

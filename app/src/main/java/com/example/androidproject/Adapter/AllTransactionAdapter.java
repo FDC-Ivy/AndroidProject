@@ -1,31 +1,25 @@
 package com.example.androidproject.Adapter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.androidproject.Activity.AllTransactionActivity;
 import com.example.androidproject.Enum.UserType;
-import com.example.androidproject.Model.AddToCart;
 import com.example.androidproject.Model.TransactionHistory;
 import com.example.androidproject.R;
-import com.example.androidproject.Singleton.SignInSingleton;
 import com.example.androidproject.ViewHolder.AllTransactionViewHolder;
-import com.example.androidproject.ViewHolder.CartViewHolder;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,9 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionViewHolder>{
 
@@ -44,6 +36,8 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     String tranID, prodID;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private double mtotal = 0.00;
 
     public AllTransactionAdapter(Context context, List<TransactionHistory> items) {
         this.context = context;
@@ -73,8 +67,9 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
         holder.transactionTotal.setText(items.get(position).getTransactionTotal());
         holder.transactionPrice.setText(items.get(position).getTransactionProductPrice());
 
+        FirebaseUser user = auth.getCurrentUser();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        DatabaseReference userRef = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
+        DatabaseReference userRef = usersRef.child(user.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,11 +103,11 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
             public void onCancelled(DatabaseError error) {}
         });
 
-        if(items.get(position).isOnQueue() == true){
+        if(items.get(position).isNotQueue() == false){
             holder.queue.setText("Queueing");
             holder.queue.setTextColor(Color.parseColor("#FFFA0000"));
 
-            DatabaseReference userRef2 = usersRef.child(SignInSingleton.getInstance().getAuthUserId());
+            DatabaseReference userRef2 = usersRef.child(user.getUid());
             userRef2.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -154,7 +149,7 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
                 DatabaseReference transactionsRef = database.getReference("transactions");
 
                 String transactionId = mtransactionId;
-                boolean newOnQueueValue = false; // Update this with your desired value
+                boolean newOnQueueValue = true; // Update this with your desired value
 
                 Query query = transactionsRef.orderByChild("transactionId").equalTo(transactionId);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -164,7 +159,7 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
                             String key = snapshot.getKey();
                             if (key != null) {
                                 DatabaseReference transactionRef = transactionsRef.child(key);
-                                transactionRef.child("onQueue").setValue(newOnQueueValue)
+                                transactionRef.child("notQueue").setValue(newOnQueueValue)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {

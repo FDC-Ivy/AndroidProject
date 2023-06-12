@@ -31,6 +31,17 @@
         android:contentDescription="Go Back"
         />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/total_txt"
+        android:gravity="right"
+        android:textSize="16dp"
+        android:textColor="@color/black"
+        android:padding="15dp"
+        android:layout_marginLeft="60dp"
+        android:text="Total: P0.00"/>
+
     <!--//refresh-->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

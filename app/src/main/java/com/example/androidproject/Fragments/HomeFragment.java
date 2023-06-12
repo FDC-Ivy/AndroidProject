@@ -191,6 +191,8 @@ public class HomeFragment extends Fragment {
         productImage = formView.findViewById(R.id.product_image);
         fab = formView.findViewById(R.id.floatingActionButton);
 
+        String link = "https://t4.ftcdn.net/jpg/04/81/13/43/360_F_481134373_0W4kg2yKeBRHNEklk4F9UXtGHdub3tYk.jpg";
+        Picasso.get().load(link).into(productImage);
 
         //image button
         productImage.setOnClickListener(new View.OnClickListener() {

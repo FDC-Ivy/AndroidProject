@@ -10,19 +10,19 @@ public class TransactionHistory {
     private String transactionCartQty;
     private String transactionProductPrice;
     private String transactionTotal;
-    private boolean onQueue;
+    private boolean notQueue;
 
     public TransactionHistory(){}
-    public TransactionHistory(String transactionId, String transactionUserId,String transactionProductName, String transactionTotal, String transactionTimeStamp, boolean onQueue) {
+    public TransactionHistory(String transactionId, String transactionUserId,String transactionProductName, String transactionTotal, String transactionTimeStamp, boolean notQueue) {
         this.transactionId = transactionId;
         this.transactionUserId = transactionUserId;
         this.transactionTimeStamp = transactionTimeStamp;
         this.transactionProductName = transactionProductName;
         this.transactionTotal = transactionTotal;
-        this.onQueue = onQueue;
+        this.notQueue = notQueue;
     }
 
-    public TransactionHistory(String transactionId, String transactionCartId, String transactionUserId, String transactionProductId, String transactionCartQty, String transactionTotal, String transactionTimeStamp, boolean onQueue) {
+    public TransactionHistory(String transactionId, String transactionCartId, String transactionUserId, String transactionProductId, String transactionCartQty, String transactionTotal, String transactionTimeStamp, boolean notQueue) {
         this.transactionId = transactionId;
         this.transactionCartId = transactionCartId;
         this.transactionUserId = transactionUserId;
@@ -30,7 +30,7 @@ public class TransactionHistory {
         this.transactionCartQty = transactionCartQty;
         this.transactionTotal = transactionTotal;
         this.transactionTimeStamp = transactionTimeStamp;
-        this.onQueue = onQueue;
+        this.notQueue = notQueue;
     }
 
     public String getTransactionId() {
@@ -105,7 +105,7 @@ public class TransactionHistory {
         this.transactionTotal = transactionTotal;
     }
 
-    public boolean isOnQueue() {
-        return onQueue;
+    public boolean isNotQueue() {
+        return notQueue;
     }
 }

@@ -95,7 +95,7 @@
                 android:layout_gravity="center"
                 android:visibility="visible"
                 android:clickable="true"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
+                app:srcCompat="@drawable/baseline_add_photo_alternate_24" />
         </LinearLayout>
 
     </LinearLayout>

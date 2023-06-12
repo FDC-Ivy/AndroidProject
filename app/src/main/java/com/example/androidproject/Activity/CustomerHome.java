@@ -38,18 +38,6 @@ public class CustomerHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_home);
 
-        /*userid = findViewById(R.id.textView3);*/
-        FirebaseUser user = auth.getCurrentUser();
-        String login_user_id_auth = user.getUid();
-
-        sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user_id_prefs", user.getUid());
-        editor.putBoolean("isLoggedIn", true);
-        editor.apply();
-
-
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String data = bundle.getString("user_id");
@@ -69,8 +57,9 @@ public class CustomerHome extends AppCompatActivity {
             bundle2.putString("user_id", sharedPreferences.getString("user_id_prefs", ""));
             SignInSingleton.getInstance().setAuthUserId(loginuserid);
 
+            /*FirebaseUser user = auth.getCurrentUser();
+            SignInSingleton.getInstance().setAuthUserId(user.getUid());*/
         }else{
-
             Intent intent = new Intent(CustomerHome.this, Login.class);
             startActivity(intent);
             finish();
@@ -121,19 +110,7 @@ public class CustomerHome extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Perform any actions or cleanup before exiting the activity
-                 // Call the superclass method to allow the back action
                 CustomerHome.super.onBackPressed();
-
-                /*boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-                if (isLoggedIn) {
-                    // Navigate to the desired activity
-                    Intent intent = new Intent(CustomerHome.this, Login.class);
-                    startActivity(intent);
-                    finish(); // Finish the current activity to remove it from the back stack
-                } else {
-                     // Perform the default back button behavior
-                }*/
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
