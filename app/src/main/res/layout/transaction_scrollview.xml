@@ -14,14 +14,14 @@
         <Button
             android:id="@+id/serving_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:text="Serving"/>
 
         <Button
             android:id="@+id/cancel_btn"
             android:backgroundTint="@color/gray"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:text="Close"/>
 
     </LinearLayout>

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidproject.Adapter.AllTransactionAdapter;
+import com.example.androidproject.Enum.UserType;
 import com.example.androidproject.Model.TransactionHistory;
 import com.example.androidproject.R;
 import com.example.androidproject.Singleton.SignInSingleton;
@@ -51,6 +52,7 @@ public class AllTransactionActivity extends AppCompatActivity {
     double mtotal = 0.00;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_transaction);
@@ -86,7 +88,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
-                    if(usertype.equals("CUSTOMER")){
+                    if(usertype.equals(UserType.CUSTOMER)){
                         displayTransaction();
                     }else{
                         adminDisplayTransaction();
@@ -110,7 +112,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                         if(dataSnapshot.exists()){
                             String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
-                            if(usertype.equals("CUSTOMER")){
+                            if(usertype.equals(UserType.CUSTOMER)){
                                 displayTransaction();
                             }else{
                                 adminDisplayTransaction();

@@ -19,12 +19,6 @@
         android:theme="@style/Theme.AndroidProject"
         tools:targetApi="31">
         <activity
-            android:name=".Activity.AdminTransactionHistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.QueueActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activity.AllTransactionActivity"
             android:exported="false" />
         <activity

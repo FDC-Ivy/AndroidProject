@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
 
                             Picasso.get().load(imageUri).into(productImage);
                             productImage.setVisibility(View.VISIBLE);
-                            Toast.makeText(context, "Image added", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "Image added", Toast.LENGTH_SHORT).show();
                         }
                         else {
 
@@ -214,7 +214,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Save to Storage
-                saveImageToFirebase(imageUri);
+                /*if(imageUri != null){
+                    saveImageToFirebase(imageUri);
+                }*/
+
+                String name = prodname.getText().toString();
+                String price = prodprice.getText().toString();
+                String desc = proddesc.getText().toString();
+
+                if(name.equals("") || price.equals("") || desc.equals("") || imageUri == null){
+                    Toast.makeText(context, "Please fill product information correctly.", Toast.LENGTH_SHORT).show();
+                }else{
+                    saveImageToFirebase(imageUri);
+                }
             }
         });
 
@@ -321,6 +333,7 @@ public class HomeFragment extends Fragment {
                         String pname = prodname.getText().toString();
                         String pprice = prodprice.getText().toString();
                         String pdesc = proddesc.getText().toString();
+
 
                         DatabaseReference newChildRef = databaseReference.push();
                         String childKey = newChildRef.getKey();

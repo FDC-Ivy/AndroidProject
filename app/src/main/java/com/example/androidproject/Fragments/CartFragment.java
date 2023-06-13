@@ -34,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
@@ -214,21 +215,24 @@ public class CartFragment extends Fragment {
     public void deleteAllCarts() {
         DatabaseReference cartsReference = FirebaseDatabase.getInstance().getReference().child("carts");
 
-        cartsReference.removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Deletion successful
-                        //Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        Query cartUserQuery = cartsReference.orderByChild("cartuserid").equalTo(SignInSingleton.getInstance().getAuthUserId());
+        cartUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+                // Deletion successful
+                //Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any errors
+                Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     public void deleteAllPrompt() {
@@ -311,8 +315,11 @@ public class CartFragment extends Fragment {
                                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                                     String formattedDate = dateFormat.format(currentDate);
                                     double total = mtotalPrice;
-                                    TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, quantity, String.valueOf(mtotalPrice), String.valueOf(formattedDate), false);
-                                    transactionsRef.child(transactionId).setValue(transaction);
+
+                                    if(userId.equals(SignInSingleton.getInstance().getAuthUserId())){
+                                        TransactionHistory transaction = new TransactionHistory(String.valueOf(randomNum), cartid, userId, productId, quantity, String.valueOf(mtotalPrice), String.valueOf(formattedDate), false);
+                                        transactionsRef.child(transactionId).setValue(transaction);
+                                    }
 
                                     // Step 4: Remove the cart item from "carts" table
                                     deleteAllCarts();

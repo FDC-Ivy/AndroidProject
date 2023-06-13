@@ -323,29 +323,34 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
                 String pprice = prodprice.getText().toString();
                 String pdesc = proddesc.getText().toString();
 
-                // Create a data object or HashMap to hold the updated form data
-                Map<String, Object> updateData = new HashMap<>();
-                updateData.put("productname", pname);
-                updateData.put("productprice", pprice);
-                updateData.put("productdesc", pdesc);
+                if(pname.equals("") || pprice.equals("") || pdesc.equals("")){
+                    Toast.makeText(context, "Please fill product information correctly. Update failed.", Toast.LENGTH_SHORT).show();
+                }else {
 
-                // Update the form data in Firebase Realtime Database
-                databaseReference.child(prodid).updateChildren(updateData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Data update successful
-                            Toast.makeText(context, "Product updated successfully.", Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Handle update failure
-                            Toast.makeText(context, "Failed to update product.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    // Create a data object or HashMap to hold the updated form data
+                    Map<String, Object> updateData = new HashMap<>();
+                    updateData.put("productname", pname);
+                    updateData.put("productprice", pprice);
+                    updateData.put("productdesc", pdesc);
+
+                    // Update the form data in Firebase Realtime Database
+                    databaseReference.child(prodid).updateChildren(updateData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Data update successful
+                                    Toast.makeText(context, "Product updated successfully.", Toast.LENGTH_SHORT).show();
+                                    alertDialog.dismiss();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle update failure
+                                    Toast.makeText(context, "Failed to update product.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
 
             }
         });

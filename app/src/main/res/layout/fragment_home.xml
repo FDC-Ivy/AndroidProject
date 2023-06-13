@@ -10,19 +10,34 @@
     android:focusable="true"
     tools:context=".Fragments.HomeFragment">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
+        android:id="@+id/delete_all_prod1"
         android:layout_height="wrap_content"
-        android:id="@+id/delete_all_prod"
-        android:text="Delete All"
-        android:layout_marginLeft="250dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="end"
-        android:visibility="gone"
-        android:textColor="@color/jollibeered"
-        android:textSize="16dp"
-        android:drawableEnd="@drawable/baseline_delete_24"
-        android:drawableTint="@color/jollibeered"/>
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/delete_all_prod"
+            android:text="Delete All"
+            android:layout_marginLeft="250dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:visibility="gone"
+            android:textColor="@color/jollibeered"
+            android:textSize="16dp"
+            android:drawableEnd="@drawable/baseline_delete_24"
+            android:drawableTint="@color/jollibeered"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_add_product"
@@ -31,7 +46,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:visibility="gone"
-        android:layout_below="@id/delete_all_prod"
+        android:layout_below="@id/delete_all_prod1"
         android:text="+ Add Product" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

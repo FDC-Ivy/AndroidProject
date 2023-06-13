@@ -96,7 +96,10 @@ public class UserFragment extends Fragment {
 
                     }
 
-                    showAlertDialogForImage(imageUri);
+                    if(imageUri != null){
+                        showAlertDialogForImage(imageUri);
+                    }
+
                 }
             });
     }
@@ -282,31 +285,39 @@ public class UserFragment extends Fragment {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Object> updateData = new HashMap<>();
-                updateData.put("useremail", email.getText().toString());
-                updateData.put("userfirstname", fname.getText().toString());
-                updateData.put("userlastname", lname.getText().toString());
 
-                // Update the form data in Firebase Realtime Database
-                databaseReference.updateChildren(updateData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // Data update successful
-                                Toast.makeText(context, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Handle update failure
-                                Toast.makeText(context, "Failed to update profile.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                if(fname.getText().toString().equals("") || lname.getText().toString().equals("")){
+                    Toast.makeText(context, "Please fill your information correctly.", Toast.LENGTH_SHORT).show();
+                }else{
+
+                    Map<String, Object> updateData = new HashMap<>();
+                    //updateData.put("useremail", email.getText().toString());
+                    updateData.put("userfirstname", fname.getText().toString());
+                    updateData.put("userlastname", lname.getText().toString());
+
+                    // Update the form data in Firebase Realtime Database
+                    databaseReference.updateChildren(updateData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Data update successful
+                                    Toast.makeText(context, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle update failure
+                                    Toast.makeText(context, "Failed to update profile.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+
 
                 // Update authentication email
-                String newEmail = email.getText().toString();
+                /*String newEmail = email.getText().toString();
                 if (!TextUtils.isEmpty(newEmail) && !newEmail.equals(user.getEmail())) {
                     user.updateEmail(newEmail)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -321,10 +332,10 @@ public class UserFragment extends Fragment {
                                     }
                                 }
                             });
-                }
+                }*/
 
                 // Update authentication password
-                String newPassword = pwd.getText().toString();
+                /*String newPassword = pwd.getText().toString();
                 if (!TextUtils.isEmpty(newPassword)) {
                     user.updatePassword(newPassword)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -339,7 +350,7 @@ public class UserFragment extends Fragment {
                                     }
                                 }
                             });
-                }
+                }*/
 
             }
         });

@@ -131,6 +131,8 @@ public class AllTransactionAdapter extends RecyclerView.Adapter<AllTransactionVi
         }else{
             holder.queue.setText("Done");
             holder.queue.setTextColor(Color.parseColor("#FF299533"));
+            holder.itemView.setClickable(false);
+            holder.itemView.setFocusable(false);
         }
     }
 
