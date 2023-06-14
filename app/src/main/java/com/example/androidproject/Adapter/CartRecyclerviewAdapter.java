@@ -41,6 +41,7 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
     public CartRecyclerviewAdapter(Context context, List<AddToCart> items) {
         this.context = context;
         this.items = items;
+        notifyDataSetChanged();
     }
 
     @NonNull

@@ -101,7 +101,6 @@ public class CartFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
                 displayData();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -132,7 +131,7 @@ public class CartFragment extends Fragment {
         return view;
     }
 
-    private void displayData() {
+    /*private void displayData() {
 
         String userId = SignInSingleton.getInstance().getAuthUserId();
         if (userId == null) {
@@ -191,12 +190,15 @@ public class CartFragment extends Fragment {
                         });
                         mtotalPrice = 0.00;
                     }
-                }
 
-                if (cartlist.size() == childCount) {
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                     recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
                 }
+
+                *//*if (cartlist.size() == childCount) {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
+                }*//*
 
                 if (!dataSnapshot.exists()){
                     deleteAllBtn.setVisibility(View.GONE);
@@ -210,7 +212,90 @@ public class CartFragment extends Fragment {
                 //Log.w("Firebase", "Failed to read value.", error.toException());
             }
         });
+
+    }*/
+
+    private void displayData() {
+        String userId = SignInSingleton.getInstance().getAuthUserId();
+        if (userId == null) {
+            // Handle the case when the user ID is not available
+            return;
+        }
+
+        DatabaseReference cartsReference = FirebaseDatabase.getInstance().getReference().child("carts");
+
+        Query cartUserQuery = cartsReference.orderByChild("cartuserid").equalTo(userId);
+        cartUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Create a new cartlist
+                cartlist = new ArrayList<>();
+
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    String cart_user_id = childSnapshot.child("cartuserid").getValue(String.class);
+                    String childKey = childSnapshot.getKey();
+                    String cart_qty = childSnapshot.child("cartqty").getValue(String.class);
+                    String cart_prod_id = childSnapshot.child("cartproductid").getValue(String.class);
+
+                    if (cart_user_id.equals(userId)) {
+                        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference().child("products").child(cart_prod_id);
+                        productsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    String prodid = dataSnapshot.child("productid").getValue(String.class);
+                                    String productName = dataSnapshot.child("productname").getValue(String.class);
+                                    String productPrice = dataSnapshot.child("productprice").getValue(String.class);
+                                    String pImage = dataSnapshot.child("productimage").getValue(String.class);
+
+                                    AddToCart addToCart = new AddToCart(childKey, productName, productPrice, cart_qty, pImage, cart_prod_id);
+                                    cartlist.add(addToCart);
+
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                                    recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
+
+                                    double totalPrice = Double.parseDouble(cart_qty) * Double.parseDouble(productPrice);
+                                    mtotalPrice += totalPrice;
+                                }else{
+                                    // Empty the cartlist
+                                    cartlist.clear();
+                                    // Update the RecyclerView adapter
+                                    recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
+                                    totaltxt.setText("Total: P0.00");
+                                    mtotalPrice = 0.00;
+                                }
+
+                                DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+                                String formattedTotalPrice = decimalFormat.format(mtotalPrice);
+                                totaltxt.setText("Total: P" + formattedTotalPrice);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                // Handle any errors
+                            }
+                        });
+                    }
+                }
+
+                if (!dataSnapshot.exists()){
+                    deleteAllBtn.setVisibility(View.GONE);
+                    noCartLbl.setVisibility(View.VISIBLE);
+                }else{
+                    deleteAllBtn.setVisibility(View.VISIBLE);
+                    noCartLbl.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                //Log.w("Firebase", "Failed to read value.", error.toException());
+            }
+        });
+
+        mtotalPrice = 0.00;
     }
+
 
     public void deleteAllCarts() {
         DatabaseReference cartsReference = FirebaseDatabase.getInstance().getReference().child("carts");
@@ -222,8 +307,7 @@ public class CartFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     snapshot.getRef().removeValue();
                 }
-                // Deletion successful
-                //Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();
+                //displayData();
             }
 
             @Override
@@ -232,7 +316,6 @@ public class CartFragment extends Fragment {
                 Toast.makeText(context, "Failed to remove items.", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     public void deleteAllPrompt() {
@@ -242,6 +325,10 @@ public class CartFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 deleteAllCarts();
+                // Empty the cartlist
+                cartlist.clear();
+                // Update the RecyclerView adapter
+                recyclerView.setAdapter(new CartRecyclerviewAdapter(context, cartlist));
                 totaltxt.setText("Total: P0.00");
                 mtotalPrice = 0.00;
                 Toast.makeText(context, "All items are removed.", Toast.LENGTH_SHORT).show();

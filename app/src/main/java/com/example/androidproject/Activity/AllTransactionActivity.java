@@ -88,7 +88,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
-                    if(usertype.equals(UserType.CUSTOMER)){
+                    if(usertype.equals("CUSTOMER")){
                         displayTransaction();
                     }else{
                         adminDisplayTransaction();
@@ -112,7 +112,7 @@ public class AllTransactionActivity extends AppCompatActivity {
                         if(dataSnapshot.exists()){
                             String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
-                            if(usertype.equals(UserType.CUSTOMER)){
+                            if(usertype.equals("CUSTOMER")){
                                 displayTransaction();
                             }else{
                                 adminDisplayTransaction();

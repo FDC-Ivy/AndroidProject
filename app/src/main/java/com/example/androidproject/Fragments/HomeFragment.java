@@ -127,7 +127,6 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
                 displayData();
                 swipeRefreshLayout.setRefreshing(false);
             }
