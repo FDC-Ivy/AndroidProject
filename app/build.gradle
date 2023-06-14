@@ -74,5 +74,8 @@ dependencies {
 
     //Database Firebase Storage
     implementation 'com.google.firebase:firebase-storage:20.0.0'
+
+    //firebase realtime database
+    implementation 'com.google.firebase:firebase-database:20.0.0'
 }
 
