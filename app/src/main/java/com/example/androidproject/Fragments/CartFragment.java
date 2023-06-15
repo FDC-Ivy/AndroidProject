@@ -23,8 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidproject.Adapter.CartRecyclerviewAdapter;
+import com.example.androidproject.Adapter.ProductRecyclerViewAdapter;
 import com.example.androidproject.Interface.OnDataSetChangedListener;
 import com.example.androidproject.Model.AddToCart;
+import com.example.androidproject.Model.Products;
 import com.example.androidproject.Model.TransactionHistory;
 import com.example.androidproject.Paypal.Config;
 import com.example.androidproject.R;
@@ -60,11 +62,13 @@ import java.math.BigDecimal;
 public class CartFragment extends Fragment implements OnDataSetChangedListener {
 
     private ArrayList<AddToCart> cartlist;
+    private ArrayList<Products> prodlist = new ArrayList<>();
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
     private Context context;
     private TextView deleteAllBtn, proceedPaymentBtn, noCartLbl;
     private CartRecyclerviewAdapter adapter;
+    private ProductRecyclerViewAdapter prodAdapter;
     private TextView totaltxt;
     private double mtotalPrice = 0.00;
     private int randomNum = 0;
@@ -130,6 +134,7 @@ public class CartFragment extends Fragment implements OnDataSetChangedListener {
                 transactionDialog();
             }
         });
+
         return view;
     }
 
@@ -170,10 +175,13 @@ public class CartFragment extends Fragment implements OnDataSetChangedListener {
                                     cartlist.add(addToCart);
 
                                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                                    //CartRecyclerviewAdapter adapter = new CartRecyclerviewAdapter(context, cartlist);
                                     adapter = new CartRecyclerviewAdapter(context, cartlist);
                                     adapter.setOnDataSetChangedListener(CartFragment.this);
                                     recyclerView.setAdapter(adapter);
+
+                                    /*prodAdapter = new ProductRecyclerViewAdapter(context, prodlist);
+                                    prodAdapter.setOnDataSetChangedListener(CartFragment.this);
+                                    recyclerView.setAdapter(prodAdapter);*/
 
 
                                     double totalPrice = Double.parseDouble(cart_qty) * Double.parseDouble(productPrice);
@@ -181,11 +189,16 @@ public class CartFragment extends Fragment implements OnDataSetChangedListener {
                                 }else{
                                     // Empty the cartlist
                                     cartlist.clear();
-                                    //CartRecyclerviewAdapter adapter = new CartRecyclerviewAdapter(context, cartlist);
                                     adapter = new CartRecyclerviewAdapter(context, cartlist);
                                     adapter.setOnDataSetChangedListener(CartFragment.this);
                                     // Update the RecyclerView adapter
                                     recyclerView.setAdapter(adapter);
+
+                                    /*prodAdapter = new ProductRecyclerViewAdapter(context, prodlist);
+                                    prodAdapter.setOnDataSetChangedListener(CartFragment.this);
+                                    recyclerView.setAdapter(prodAdapter);*/
+
+
                                     totaltxt.setText("Total: P0.00");
                                     mtotalPrice = 0.00;
                                 }
@@ -282,6 +295,10 @@ public class CartFragment extends Fragment implements OnDataSetChangedListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 processPayment();
+
+                if(mtotalPrice == 0.0){
+                    Toast.makeText(context, "You don't have something in your cart.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         builder.setNegativeButton("Cancel", null);
