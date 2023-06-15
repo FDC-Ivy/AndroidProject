@@ -41,10 +41,6 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
 
     private OnDataSetChangedListener dataChangedListener;
 
-    /*public interface OnDataSetChangedListener {
-        void onDataSetChanged();
-    }*/
-
     public void setOnDataSetChangedListener(OnDataSetChangedListener listener) {
         this.dataChangedListener = listener;
     }
@@ -151,6 +147,9 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 // Cart update successful
+                                                if (dataChangedListener != null) {
+                                                    dataChangedListener.onDataSetChanged(); // Notify the fragment to refresh its data
+                                                }
                                                 alertDialog.dismiss();
                                                 Toast.makeText(context, "Successfully updated cart.", Toast.LENGTH_SHORT).show();
                                             }

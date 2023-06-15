@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidproject.Activity.ProductActivity;
+import com.example.androidproject.Interface.OnDataSetChangedListener;
 import com.example.androidproject.Model.Branches;
 import com.example.androidproject.Model.ClickedBranch;
 import com.example.androidproject.Model.Products;
@@ -47,6 +48,11 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
     Context context;
     List<Products> items;
     private DatabaseReference databaseReference;
+    private OnDataSetChangedListener dataChangedListener;
+
+    public void setOnDataSetChangedListener(OnDataSetChangedListener listener) {
+        this.dataChangedListener = listener;
+    }
 
     public ProductRecyclerViewAdapter(Context context, List<Products> items) {
         this.context = context;
@@ -152,6 +158,10 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 // Cart update successful
+                                                /*if (dataChangedListener != null) {
+                                                    dataChangedListener.onDataSetChanged(); // Notify the fragment to refresh its data
+                                                }*/
+
                                                 alertDialog.dismiss();
                                                 Toast.makeText(context, "Successfully updated cart.", Toast.LENGTH_SHORT).show();
                                             }
@@ -187,6 +197,10 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         // New cart entry creation successful
+                                        /*if (dataChangedListener != null) {
+                                            dataChangedListener.onDataSetChanged(); // Notify the fragment to refresh its data
+                                        }*/
+
                                         alertDialog.dismiss();
                                         Toast.makeText(context, "Successfully added to cart.", Toast.LENGTH_SHORT).show();
                                     }
