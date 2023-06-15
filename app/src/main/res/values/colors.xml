@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--<color name="purple_200">#FF4747</color>-->
-    <color name="purple_200">#E0163D</color>
-    <color name="purple_500">#FF6200EE</color>
+    <color name="jollibeered">#E0163D</color>
+    <color name="purple_500">#E0163D</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
@@ -17,7 +17,8 @@
     <color name="darkIndigo">#171d4b</color>
     <color name="gooseBerry">#afe19f</color>
     <color name="light_gray">#B3B3B3</color>
-
+    <color name="light_gray2">#C5C5C5</color>
+    <color name="light_blue">#00B7FF</color>
 
     <color name="edittext_border_color">#231F20</color>
 </resources>

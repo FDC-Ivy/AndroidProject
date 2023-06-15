@@ -14,7 +14,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.androidproject.Interface.OnDataSetChangedListener;
 import com.example.androidproject.Model.AddToCart;
+import com.example.androidproject.Model.Products;
 import com.example.androidproject.R;
 import com.example.androidproject.Singleton.SignInSingleton;
 import com.example.androidproject.ViewHolder.CartViewHolder;
@@ -30,22 +32,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder>{
+public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder> {
 
     Context context;
     List<AddToCart> items;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
+    private OnDataSetChangedListener dataChangedListener;
+
+    /*public interface OnDataSetChangedListener {
+        void onDataSetChanged();
+    }*/
+
+    public void setOnDataSetChangedListener(OnDataSetChangedListener listener) {
+        this.dataChangedListener = listener;
+    }
+
     public CartRecyclerviewAdapter(Context context, List<AddToCart> items) {
         this.context = context;
         this.items = items;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new CartViewHolder(LayoutInflater.from(context).inflate(R.layout.cart_view,parent,false));
+        return new CartViewHolder(LayoutInflater.from(context).inflate(R.layout.cart_view, parent, false));
     }
 
     @Override
@@ -56,9 +69,12 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
         String cartProductQty = items.get(position).getCartProductQty();
 
         holder.cartProductName.setText(items.get(position).getCartProductName());
-        holder.cartProductPrice.setText("Price: "+items.get(position).getCartProductPrice());
-        holder.cartProductQty.setText("Qty: "+items.get(position).getCartProductQty());
-        holder.cartImage.setImageResource(items.get(position).getCartProductImage());
+        holder.cartProductPrice.setText("Price: " + items.get(position).getCartProductPrice());
+        holder.cartProductQty.setText("Qty: " + items.get(position).getCartProductQty());
+        //holder.cartImage.setText(items.get(position).getCartProductImage());
+
+        AddToCart cart = items.get(position);
+        holder.bind(cart);
 
         //to make recycleview clickable
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +89,7 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
         holder.deleteProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteCart(cartId);
+                deleteCart(cartId, position);
             }
         });
     }
@@ -196,34 +212,40 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
         }
     }
 
-    public void deleteProductFromCart(String cartid){
+    public void deleteProductFromCart(String cartid, int position) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("carts").child(cartid);
         databaseReference.removeValue()
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // Deletion successful
-                    Toast.makeText(context, "Successfully removed.", Toast.LENGTH_SHORT).show();
-                    //alertDialog.dismiss();
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Handle any errors
-                    Toast.makeText(context, "Failed to remove.", Toast.LENGTH_SHORT).show();
-                }
-            });
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Deletion successful
+                        Toast.makeText(context, "Successfully removed.", Toast.LENGTH_SHORT).show();
+                        removeItem(position);
+
+                        if (dataChangedListener != null) {
+                            dataChangedListener.onDataSetChanged(); // Notify the fragment to refresh its data
+                        }
+
+                        //alertDialog.dismiss();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors
+                        Toast.makeText(context, "Failed to remove.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    public void deleteCart(String cartid) {
+    public void deleteCart(String cartid, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Are you sure you want to delete this from your cart?");
         builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                deleteProductFromCart(cartid);
+                deleteProductFromCart(cartid, position);
                 dialog.dismiss();
             }
         });
@@ -231,5 +253,12 @@ public class CartRecyclerviewAdapter extends RecyclerView.Adapter<CartViewHolder
         builder.setNegativeButton("Cancel", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void removeItem(int position) {
+        if (position >= 0 && position < items.size()) {
+            items.remove(position);
+            notifyDataSetChanged();
+        }
     }
 }

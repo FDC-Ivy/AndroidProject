@@ -10,22 +10,27 @@ public class TransactionHistory {
     private String transactionCartQty;
     private String transactionProductPrice;
     private String transactionTotal;
+    private boolean notQueue;
 
     public TransactionHistory(){}
-    public TransactionHistory(String transactionId, String transactionProductName, String transactionTotal, String transactionTimeStamp) {
+    public TransactionHistory(String transactionId, String transactionUserId,String transactionProductName, String transactionTotal, String transactionTimeStamp, boolean notQueue) {
         this.transactionId = transactionId;
+        this.transactionUserId = transactionUserId;
         this.transactionTimeStamp = transactionTimeStamp;
         this.transactionProductName = transactionProductName;
         this.transactionTotal = transactionTotal;
+        this.notQueue = notQueue;
     }
 
-    public TransactionHistory(String transactionId, String transactionCartId, String transactionUserId, String transactionProductId, String transactionTotal, String transactionTimeStamp) {
+    public TransactionHistory(String transactionId, String transactionCartId, String transactionUserId, String transactionProductId, String transactionCartQty, String transactionTotal, String transactionTimeStamp, boolean notQueue) {
         this.transactionId = transactionId;
         this.transactionCartId = transactionCartId;
         this.transactionUserId = transactionUserId;
         this.transactionProductId = transactionProductId;
+        this.transactionCartQty = transactionCartQty;
         this.transactionTotal = transactionTotal;
         this.transactionTimeStamp = transactionTimeStamp;
+        this.notQueue = notQueue;
     }
 
     public String getTransactionId() {
@@ -98,5 +103,9 @@ public class TransactionHistory {
 
     public void setTransactionTotal(String transactionTotal) {
         this.transactionTotal = transactionTotal;
+    }
+
+    public boolean isNotQueue() {
+        return notQueue;
     }
 }

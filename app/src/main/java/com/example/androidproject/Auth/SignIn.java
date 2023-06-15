@@ -1,18 +1,13 @@
 package com.example.androidproject.Auth;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.androidproject.Activity.CustomerHome;
-import com.example.androidproject.Activity.Login;
-import com.example.androidproject.Activity.SellerHome;
-import com.example.androidproject.DataManager.SharedPreferenceManager;
-import com.example.androidproject.Enum.UserType;
-import com.example.androidproject.Interface.SignInCallback;
 import com.example.androidproject.Singleton.SignInSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -58,30 +53,13 @@ public class SignIn {
                                 if (dataSnapshot.exists()) {
                                     String usertype = dataSnapshot.child("usertype").getValue(String.class);
 
-
-
-                                    if(usertype.equals(UserType.CUSTOMER.toString())){
-
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
-                                        // Create an Intent and put the Bundle as extra
-                                        Intent intent = new Intent(context, CustomerHome.class);
-                                        intent.putExtras(bundle);
-                                        context.startActivity(intent);
-
-
-                                    }else if(usertype.equals(UserType.CASHIER.toString())){
-
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
-                                        // Create an Intent and put the Bundle as extra
-                                        Intent intent = new Intent(context, SellerHome.class);
-                                        intent.putExtras(bundle);
-                                        context.startActivity(intent);
-                                    }
-
-                                    /*SharedPreferenceManager manager = SharedPreferenceManager.getInstance();
-                                    manager.saveSharedPreference(this, "user_id", userId);*/
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("user_id", SignInSingleton.getInstance().getAuthUserId());
+                                    // Create an Intent and put the Bundle as extra
+                                    Intent intent = new Intent(context, CustomerHome.class);
+                                    intent.putExtras(bundle);
+                                    context.startActivity(intent);
+                                    ((Activity) context).finish();
                                 }
                             }
 
@@ -100,7 +78,7 @@ public class SignIn {
                         String errorCode = exception.getErrorCode();
                         String errorMessage = exception.getMessage();
                         // Handle specific error codes or display a generic error message
-                        Toast.makeText(context, "error message: "+errorMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Login failed, please double check your credentials.", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

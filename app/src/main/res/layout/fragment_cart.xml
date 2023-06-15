@@ -4,26 +4,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/cart_view_click"
+    android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
     tools:context=".Fragments.CartFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
+        android:id="@+id/delete_all_cart_btn1"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Remove All"
-        android:id="@+id/delete_all_cart_btn"/>
+        android:orientation="horizontal">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_cart"
-        android:layout_below="@id/delete_all_cart_btn"
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/delete_all_cart_btn"
+            android:text="Remove All"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"
+            android:textColor="@color/jollibeered"
+            android:textSize="16sp"
+            android:drawableEnd="@drawable/baseline_delete_24"
+            android:drawableTint="@color/jollibeered"/>
+    </LinearLayout>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_below="@id/delete_all_cart_btn1"
+        android:layout_above="@+id/button_layout"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_cart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/no_cart_label"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/button_layout" />
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="Cart is Empty" />
 
     <LinearLayout
         android:id="@+id/button_layout"
@@ -32,16 +66,26 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/recycler_view_cart"
             android:id="@+id/total_price"
-            android:text="Total" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:text="Total: P0.00" />
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:layout_margin="10dp"
             android:text="Pay Now"
             android:id="@+id/payment_btn"
             android:layout_gravity="center_horizontal" />

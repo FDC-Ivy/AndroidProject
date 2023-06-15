@@ -32,7 +32,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +61,10 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
         holder.productName.setText(items.get(position).getmProductName());
         holder.productDesc.setText(items.get(position).getmProductDescription());
         holder.productPrice.setText("Price: P"+items.get(position).getmProductPrice());
-        holder.productImg.setImageResource(items.get(position).getmProductImage());
+        //holder.productImg.setImageResource(items.get(position).getmProductImage());
+
+        Products product = items.get(position);
+        holder.bind(product);
 
         final Products data = items.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -241,7 +249,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
     //update product
     private void productEditDialog(String prodid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Products");
 
         // Inflate the form layout XML file
         View formView = LayoutInflater.from(context).inflate(R.layout.product_edit, null);
@@ -316,29 +323,34 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductView
                 String pprice = prodprice.getText().toString();
                 String pdesc = proddesc.getText().toString();
 
-                // Create a data object or HashMap to hold the updated form data
-                Map<String, Object> updateData = new HashMap<>();
-                updateData.put("productname", pname);
-                updateData.put("productprice", pprice);
-                updateData.put("productdesc", pdesc);
+                if(pname.equals("") || pprice.equals("") || pdesc.equals("")){
+                    Toast.makeText(context, "Please fill product information correctly. Update failed.", Toast.LENGTH_SHORT).show();
+                }else {
 
-                // Update the form data in Firebase Realtime Database
-                databaseReference.child(prodid).updateChildren(updateData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Data update successful
-                            Toast.makeText(context, "Product updated successfully.", Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Handle update failure
-                            Toast.makeText(context, "Failed to update product.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    // Create a data object or HashMap to hold the updated form data
+                    Map<String, Object> updateData = new HashMap<>();
+                    updateData.put("productname", pname);
+                    updateData.put("productprice", pprice);
+                    updateData.put("productdesc", pdesc);
+
+                    // Update the form data in Firebase Realtime Database
+                    databaseReference.child(prodid).updateChildren(updateData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Data update successful
+                                    Toast.makeText(context, "Product updated successfully.", Toast.LENGTH_SHORT).show();
+                                    alertDialog.dismiss();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle update failure
+                                    Toast.makeText(context, "Failed to update product.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
 
             }
         });

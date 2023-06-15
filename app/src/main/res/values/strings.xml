@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Androidss Project</string>
+    <string name="app_name">Jollibee Ordering App</string>
     <!--    <string name="hyperlink">Learn more about Android app development at\n<a href="https://learntodroid.com">LearnToDroid.com</a></string>-->
 
     <string name="firstname">First Name</string>
@@ -22,7 +22,7 @@
     <!--Buttons-->
     <string name="button_signup">Register</string>
     <string name="button_signin">Login</string>
-    <string name="title_activity_customer_home">CustomerHome</string>
+    <string name="title_activity_customer_home">Jollibee Ordering App</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>

@@ -3,6 +3,7 @@ package com.example.androidproject.Singleton;
 public class SignInSingleton {
     private static SignInSingleton instance;
     private String mauthUserId;
+    private String mauthUserTyoe;
 
     private SignInSingleton() {
         // Private constructor to prevent instantiation from outside the class
@@ -25,6 +26,14 @@ public class SignInSingleton {
 
     public String getAuthUserId() {
         return mauthUserId;
+    }
+
+    public String getMauthUserType() {
+        return mauthUserTyoe;
+    }
+
+    public void setMauthUserType(String mauthUserTyoe) {
+        this.mauthUserTyoe = mauthUserTyoe;
     }
 }
 
